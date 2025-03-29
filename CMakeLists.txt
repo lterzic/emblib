@@ -90,6 +90,12 @@ target_link_libraries(emblib PUBLIC
     eigen
 )
 
+# Remove RTTI and exceptions
+target_compile_options(emblib PUBLIC
+    -fno-rtti
+    -fno-exceptions
+)
+
 # Executable for testing on the fly
 if (PROJECT_IS_TOP_LEVEL)
     # Flags for the build
