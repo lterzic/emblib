@@ -12,6 +12,22 @@ In addition files from this project should be included with `""`, and external/s
 
 These groups can (not necessary) be separated by an empty line and files in each group should be sorted alphabetically.
 
+## Namespaces
+
+Namespaces should follow the project folder hierarchy, relative to the [include](/include/) folder. For example, file [include/emblib/math/matrix.hpp](/include/emblib/math/matrix.hpp) should define its types in the `emblib::math` namespace.
+
+An exception to this (currently) is only the [common](/include/emblib/common) folder.
+
+All files additionaly have a segment in the form of
+```cpp
+#if EMBLIB_UNNEST_NAMESPACES
+namespace emblib {
+    using namespace inner_namespace;
+}
+#endif
+```
+which allows library users to use all emblib types from the same top-level namespace to reduce code bloating.
+
 ## Naming and notation
 
 ### Classes
