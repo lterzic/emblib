@@ -5,7 +5,7 @@
 namespace emblib::driver {
 
 template <typename data_type>
-class three_axis_sensor {
+class sensor3d {
 
 public:
     /* Used for read axis method */
@@ -17,8 +17,8 @@ public:
     /**
      * Default constructor and destructor
     */
-    explicit three_axis_sensor() = default;
-    virtual ~three_axis_sensor() = default;
+    explicit sensor3d() = default;
+    virtual ~sensor3d() = default;
 
     /**
      * Check if the sensor identifies correctly
