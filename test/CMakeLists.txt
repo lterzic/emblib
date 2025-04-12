@@ -10,6 +10,7 @@ add_executable(tests
     math/matrix.test.cpp
     math/vector.test.cpp
     math/quaternion.test.cpp
+    rtos/freertos/hooks.c
     rtos/queue.test.cpp
     rtos/mutex.test.cpp
 )
