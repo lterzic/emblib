@@ -11,20 +11,20 @@ inline void task::start_tasks() noexcept
     freertos::start_scheduler();
 }
 
-inline void task::sleep(ticks_t duration) noexcept
+inline void task::sleep(milliseconds_t duration) noexcept
 {
-    vTaskDelay(duration.count());
+    vTaskDelay(duration.value());
 }
 
-inline void task::sleep_periodic(ticks_t period) noexcept
+inline void task::sleep_periodic(milliseconds_t period) noexcept
 {
-    m_native_task.sleep_periodic(period.count());
+    m_native_task.sleep_periodic(period.value());
 }
 
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
-inline bool task::wait_notification(ticks_t timeout) noexcept
+inline bool task::wait_notification(milliseconds_t timeout) noexcept
 {
-    return ulTaskNotifyTake(false, timeout.count());
+    return ulTaskNotifyTake(false, timeout.value());
 }
 
 inline void task::notify() noexcept

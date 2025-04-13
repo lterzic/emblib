@@ -83,7 +83,7 @@ private:
         explicit i2c_mux_channel(i2c_mux& mux, size_t index) :
             m_mux(mux), m_index(index) {}
 
-        ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds timeout) noexcept override
+        ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
         {
             if (!m_mux.select_channel(m_index)) {
                 return -1;
@@ -91,7 +91,7 @@ private:
             return m_mux.m_parent.write(address, data, size, timeout);
         }
 
-        ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds timeout) noexcept override
+        ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
         {
             if (!m_mux.select_channel(m_index)) {
                 return -1;

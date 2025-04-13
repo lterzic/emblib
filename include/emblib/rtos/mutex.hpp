@@ -36,7 +36,7 @@ public:
      * Mutex lock
      * @returns `true` if successful
      */
-    bool lock(ticks_t timeout = MAX_TICKS) noexcept;
+    bool lock(milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 
     /**
      * Mutex unlock

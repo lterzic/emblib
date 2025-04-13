@@ -5,7 +5,7 @@
     #include "./freertos/task.hpp"
 #else
 #endif
-#include <chrono>
+#include "emblib/utils/chrono.hpp"
 
 namespace emblib::rtos {
 
@@ -14,23 +14,6 @@ namespace emblib::rtos {
  */
 template <size_t SIZE_IN_BYTES>
 using task_stack_t = uint8_t[SIZE_IN_BYTES];
-
-/**
- * Duration of a period of time in number of ticks
- * @note Duration of a single tick is defined in emblib_config.hpp
- */
-using ticks_t =
-#if EMBLIB_RTOS_TICK_MILLIS
-    std::chrono::milliseconds;
-#else
-    #error "Ticks not defined"
-#endif
-
-/**
- * Maximum duration used to signal indefinite waiting
- */
-static constexpr ticks_t MAX_TICKS = ticks_t(-1);
-
 
 /**
  * Thread interface
@@ -70,7 +53,7 @@ public:
      * Put the currently running thread to sleep
      * @note Static since can be called even baremetal and implemented using HAL
      */
-    static inline void sleep(ticks_t duration) noexcept;
+    static inline void sleep(milliseconds_t duration) noexcept;
 
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
     /**
@@ -100,7 +83,7 @@ protected:
      * @note First time this is called, next wake up time is relative to task creation
      * @todo Can change return type to bool to signal if woke up on time
      */
-    void sleep_periodic(ticks_t period) noexcept;
+    void sleep_periodic(milliseconds_t period) noexcept;
 
 #if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
     /**
@@ -108,7 +91,7 @@ protected:
      * @note Lightweight version of a semaphore which can be
      * taken only by this task
      */
-    bool wait_notification(ticks_t timeout = MAX_TICKS) noexcept;
+    bool wait_notification(milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 #endif
 
 private:

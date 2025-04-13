@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
+#include "emblib/utils/chrono.hpp"
 #include <functional>
 
 namespace emblib::driver {
@@ -40,14 +40,14 @@ public:
      * @returns `-1` if error, else number of bytes written
      * @note Exits once the write operation is complete
     */
-    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds timeout = MAX_MILLISECONDS) noexcept = 0;
+    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer from the device with the specified address
      * @returns `-1` if error, else number of bytes read
      * @note Exits once the read operation is complete
     */
-    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds timeout = MAX_MILLISECONDS) noexcept = 0;
+    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
 
     /**
      * Start an async write
@@ -66,7 +66,7 @@ public:
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
     */
-    virtual bool probe(i2c_address_t address, milliseconds timeout) noexcept
+    virtual bool probe(i2c_address_t address, milliseconds_t timeout) noexcept
     {
         return read(address, nullptr, 0, timeout) == 0;
     }

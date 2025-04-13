@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/common/time.hpp"
+#include "emblib/utils/chrono.hpp"
 
 #if EMBLIB_CHAR_DEV_SUPPORT_ETL
 #include <etl/string.h>
@@ -14,6 +14,7 @@ namespace emblib::driver {
 /**
  * Base class for all objects which want to provide an interface
  * for writing and reading character (byte) streams
+ * @todo Rename to io_dev
  */
 class char_dev {
 
@@ -38,9 +39,8 @@ public:
      * If `timeout` is 0, the function exits as soon as it tried
      * to write any data to the device. It's possible that all of the
      * data was written on the first try, but it's also possible
-     * that none of the data was written. Timeout value of
-     * `milliseconds::max()` represents waiting infinitely for all
-     * of the data to be written.
+     * that none of the data was written. The max timeout value
+     * represents waiting infinitely for all of the data to be written.
      * 
      * @return If a negative value was returned, there was an error
      * during the write operation and it can't be assumed if any data
@@ -48,7 +48,7 @@ public:
      * was no error and represents the number of bytes successfully
      * written before the timeout period passed.
     */
-    virtual ssize_t write(const char* data, size_t size, milliseconds timeout = milliseconds::max()) noexcept = 0;
+    virtual ssize_t write(const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer
@@ -56,22 +56,32 @@ public:
      * If `timeout` is 0, the function exits as soon as it tried
      * to read any data from the device. If no data was available, the
      * return value should be 0, else the number of bytes that was
-     * available and read is returned. A positive value for the timeout
-     * means that the function should wait up to `timeout` until at least
-     * 1 byte of data is available and then read all the data available
-     * and return. This doesn't mean that all `size` bytes will be read.
-     * To wait until exactly `size` bytes are read, refer to `readall`.
+     * available and read is returned. A positive timeout value
+     * means that the function should wait up to that time to read
+     * all `size` bytes and will return sooner if all the bytes are ready.
+     * The max timeout value represents waiting infinitely for all of
+     * the data to be read.
      * 
      * @return If a negative value was returned, there was an error
      * during the read operation and it can't be assumed if any data
      * was read. A non-negative return value indicates that there
      * was no error and represents the number of bytes successfully read.
     */
-    virtual ssize_t read(char* buffer, size_t size, milliseconds timeout = milliseconds::max()) noexcept = 0;
+    virtual ssize_t read(char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
 
     /**
      * Start an async write
-     * @return `true` if write operation started successfully
+     * 
+     * Returns immediately after trying to start the operation and
+     * returns true if it was started successfully. The callback
+     * should only be called if the start was okay. There is no defined
+     * timeout for the operation to complete, to manually stop the
+     * operation, see `abort_async`.
+     * 
+     * Callback status argument represents the number of bytes written
+     * during the operation. If negative value was returned, there was
+     * an error and nothing can be assumed about the number of bytes
+     * written.
      */
     virtual bool write_async(const char* data, size_t size, const callback_t cb = callback_t()) noexcept
     {
@@ -80,7 +90,17 @@ public:
 
     /**
      * Start an async read
-     * @return `true` if write operation started successfully
+     * 
+     * Returns immediately after trying to start the operation and
+     * returns true if it was started successfully. The callback
+     * should only be called if the start was okay. There is no defined
+     * timeout for the operation to complete, to manually stop the
+     * operation, see `abort_async`.
+     * 
+     * Callback status argument represents the number of bytes read
+     * during the operation. If negative value was returned, there was
+     * an error and nothing can be assumed about the number of bytes
+     * read.
      */
     virtual bool read_async(char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
     {
@@ -88,11 +108,21 @@ public:
     }
 
     /**
+     * Abort the current async operation (write/read)
+     * @todo Can be replaced with a `reset` method
+     */
+    virtual void abort_async() noexcept
+    {
+        // No implementation by default as async operations
+        // are not required
+    }
+
+    /**
      * Tests if the device is responding
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
     */
-    virtual bool probe(milliseconds timeout) noexcept
+    virtual bool probe(milliseconds_t timeout) noexcept
     {
         return read(nullptr, 0, timeout) == 0;
     }
@@ -113,15 +143,6 @@ public:
     ssize_t write(const etl::string<size>& string) noexcept
     {
         return write(string.c_str(), string.size());
-    }
-
-    /**
-     * Write async overload for string objects
-     */
-    template <size_t size>
-    bool write_async(const etl::string<size>& string) noexcept
-    {
-        return write_async(string.c_str(), string.size());
     }
 #endif
 

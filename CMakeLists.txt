@@ -66,12 +66,21 @@ endif()
 
 add_subdirectory("lib/etl")
 add_subdirectory("lib/eigen")
+add_subdirectory("lib/units")
+
+# Libary options
+target_compile_definitions(emblib PUBLIC
+    # EIGEN_NO_MALLOC
+    UNIT_LIB_DISABLE_IOSTREAM
+    DISABLE_PREDEFINED_UNITS
+)
 
 # Link all sublibraries
 target_link_libraries(emblib PUBLIC
     freertos_kernel
     etl::etl
     eigen
+    units
 )
 
 # Testing environment only if top level project

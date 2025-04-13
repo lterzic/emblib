@@ -37,7 +37,7 @@ public:
      * Send item to the queue
      * @returns `false` on timeout, else `true`
      */
-    bool send(const item_type& item, ticks_t timeout = MAX_TICKS) noexcept;
+    bool send(const item_type& item, milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 
     /**
      * Send item to the queue, don't block if queue full
@@ -48,12 +48,12 @@ public:
      * Receive item from the queue
      * @returns `false` on timeout, else `true`
      */
-    bool receive(item_type& buffer, ticks_t timeout = MAX_TICKS) noexcept;
+    bool receive(item_type& buffer, milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 
     /**
      * Similar to receive, but doesn't remove the item from the queue
      */
-    bool peek(item_type& buffer, ticks_t timeout = MAX_TICKS) noexcept;
+    bool peek(item_type& buffer, milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 
     /**
      * Get reference to the native queue object

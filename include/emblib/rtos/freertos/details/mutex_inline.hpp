@@ -1,8 +1,8 @@
 #pragma once
 
-inline bool mutex::lock(ticks_t timeout) noexcept
+inline bool mutex::lock(milliseconds_t timeout) noexcept
 {
-    return m_native_mutex.take(timeout.count());
+    return m_native_mutex.take(timeout.value());
 }
 
 inline bool mutex::unlock() noexcept

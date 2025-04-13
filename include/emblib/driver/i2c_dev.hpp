@@ -7,10 +7,9 @@
 namespace emblib::driver {
 
 /**
- * I2C Device
- * @todo Can be final
+ * I2C device
  */
-class i2c_dev : public char_dev {
+class i2c_dev final : public char_dev {
 
 public:
     explicit i2c_dev(i2c_bus& i2c_bus, i2c_address_t address)
@@ -20,7 +19,7 @@ public:
      * Write an array of bytes to this device
      * @note Refer to `char_dev::write`
     */
-    ssize_t write(const char* data, size_t size, milliseconds timeout = milliseconds::max()) noexcept override
+    ssize_t write(const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
     {
         return m_i2c_bus.write(m_address, data, size, timeout);
     }
@@ -29,7 +28,7 @@ public:
      * Read up to `size` bytes into the buffer
      * @note Refer to `char_dev::read`
     */
-    ssize_t read(char* buffer, size_t size, milliseconds timeout = milliseconds::max()) noexcept override
+    ssize_t read(char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
     {
         return m_i2c_bus.read(m_address, buffer, size, timeout);
     }
