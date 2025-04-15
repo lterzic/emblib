@@ -1,9 +1,8 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
-#include <functional>
+#include <cstdint>
 
 namespace emblib::rtos::freertos {
 
@@ -35,7 +34,6 @@ static inline scheduler_state_e get_scheduler_state() noexcept
 /**
  * Stack buffer for a FreeRTOS task, where `SIZE` is the
  * number of words for the allocation
- * @todo Can move this inside task class and rename to "stack"
  */
 template <size_t SIZE_WORDS>
 using task_stack_t = StackType_t[SIZE_WORDS];
@@ -48,12 +46,10 @@ class task {
 public:
     template <size_t STACK_SIZE>
     explicit task(
-        std::function<void ()> task_func,
         const char* name,
         size_t priority,
         task_stack_t<STACK_SIZE>& stack
     ) :
-        m_task_func(task_func),
         m_task_handle(xTaskCreateStatic(
             reinterpret_cast<void (*)(void*)>(&task_entry),
             name,
@@ -74,19 +70,6 @@ public:
     task& operator=(task&&) = delete;
 
     /**
-     * Sleep relative to previous wake up time
-     * @returns `true` if wakeup was delayed, false if woke up on time
-     */
-    bool sleep_periodic(TickType_t period) noexcept
-    {
-        if (m_first_period) {
-            m_first_period = false;
-            m_prev_wakeup = xTaskGetTickCount();
-        }
-        return xTaskDelayUntil(&m_prev_wakeup, period) == pdTRUE;
-    }
-
-    /**
      * Increment task's notification value (works like a counting semaphore)
      */
     void notify() noexcept
@@ -103,23 +86,40 @@ public:
         vTaskNotifyGiveFromISR(m_task_handle, NULL);
     }
 
+protected:
+    /**
+     * Sleep relative to previous wake up time
+     * @returns `true` if wakeup was delayed, false if woke up on time
+     */
+    bool sleep_periodic(TickType_t period) noexcept
+    {
+        if (m_first_period) {
+            m_first_period = false;
+            m_prev_wakeup = xTaskGetTickCount();
+        }
+        return xTaskDelayUntil(&m_prev_wakeup, period) == pdTRUE;
+    }
+
 private:
+    /**
+     * Task function
+     */
+    virtual void run() noexcept = 0;
+
     /**
      * Actual function which is called by the scheduler which then calls the
      * appropriate cpp style task function to allow for passing contexts to
-     * the thread using std::function
+     * the thread
      */
     static void task_entry(task* instance) noexcept
     {
-        instance->m_task_func();
+        instance->run();
 
         /* If the function ever exits, remove this task */
         vTaskDelete(instance->m_task_handle);
     }
 
 private:
-    std::function<void ()> m_task_func;
-    
     StaticTask_t m_task_buffer;
     TaskHandle_t m_task_handle;
 
