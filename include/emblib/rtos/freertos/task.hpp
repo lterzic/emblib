@@ -1,5 +1,7 @@
 #pragma once
 
+#include "emblib/emblib.hpp"
+#include "emblib/utils/chrono.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <cstdint>
@@ -39,21 +41,26 @@ template <size_t SIZE_WORDS>
 using task_stack_t = StackType_t[SIZE_WORDS];
 
 /**
+ * Tick as the time unit defined with respect to the FreeRTOS config parameter
+ */
+using ticks_t = unit_t<units::unit<std::ratio<1, configTICK_RATE_HZ>, second>, unsigned int>;
+
+/**
  * FreeRTOS Task
  */
 class task {
 
 public:
-    template <size_t STACK_SIZE>
+    template <size_t STACK_SIZE_WORDS>
     explicit task(
         const char* name,
         size_t priority,
-        task_stack_t<STACK_SIZE>& stack
+        task_stack_t<STACK_SIZE_WORDS>& stack
     ) :
         m_task_handle(xTaskCreateStatic(
             reinterpret_cast<void (*)(void*)>(&task_entry),
             name,
-            STACK_SIZE,
+            STACK_SIZE_WORDS,
             this,
             priority,
             stack,
@@ -72,7 +79,7 @@ public:
     /**
      * Increment task's notification value (works like a counting semaphore)
      */
-    void notify() noexcept
+    void notify_give() noexcept
     {
         xTaskNotifyGive(m_task_handle);
     }
@@ -81,23 +88,32 @@ public:
      * Increment task's notification value
      * @todo Add argument for higher priority task woken
      */
-    void notify_from_isr() noexcept
+    void notify_give_from_isr() noexcept
     {
         vTaskNotifyGiveFromISR(m_task_handle, NULL);
     }
 
 protected:
     /**
+     * Wait for a notification to this task
+     * @todo Return the notification count before it is decremented (cleared)
+     */
+    void notify_take(ticks_t timeout, bool clear_count = false) noexcept
+    {
+        ulTaskNotifyTake(clear_count, timeout.value());
+    }
+
+    /**
      * Sleep relative to previous wake up time
      * @returns `true` if wakeup was delayed, false if woke up on time
      */
-    bool sleep_periodic(TickType_t period) noexcept
+    bool sleep_periodic(ticks_t period) noexcept
     {
         if (m_first_period) {
             m_first_period = false;
             m_prev_wakeup = xTaskGetTickCount();
         }
-        return xTaskDelayUntil(&m_prev_wakeup, period) == pdTRUE;
+        return xTaskDelayUntil(&m_prev_wakeup, period.value()) == pdTRUE;
     }
 
 private:
