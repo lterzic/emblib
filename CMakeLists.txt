@@ -24,11 +24,30 @@ target_compile_options(emblib PUBLIC
     -fno-exceptions
     -fdata-sections
     -ffunction-sections
-    # -Wall -Wextra -Wpedantic
 )
 target_link_options(emblib PUBLIC
     -Wl,-Map=${CMAKE_PROJECT_NAME}.map
     -Wl,--gc-sections
+)
+
+# Libraries used by emblib
+add_subdirectory("lib/etl")
+add_subdirectory("lib/eigen")
+add_subdirectory("lib/units")
+
+# Libary options
+target_compile_definitions(emblib PUBLIC
+    # EIGEN_NO_MALLOC
+    UNIT_LIB_DISABLE_IOSTREAM
+    DISABLE_PREDEFINED_UNITS
+)
+
+# Link all sublibraries
+target_link_libraries(emblib PUBLIC
+    freertos_kernel
+    etl::etl
+    eigen
+    units
 )
 
 # If this is the top level project then use default configurations
@@ -64,25 +83,6 @@ else()
     add_subdirectory("lib/FreeRTOS-Kernel")
 endif()
 
-add_subdirectory("lib/etl")
-add_subdirectory("lib/eigen")
-add_subdirectory("lib/units")
-
-# Libary options
-target_compile_definitions(emblib PUBLIC
-    # EIGEN_NO_MALLOC
-    UNIT_LIB_DISABLE_IOSTREAM
-    DISABLE_PREDEFINED_UNITS
-)
-
-# Link all sublibraries
-target_link_libraries(emblib PUBLIC
-    freertos_kernel
-    etl::etl
-    eigen
-    units
-)
-
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
     # Add the testing library and all the tests
@@ -90,6 +90,7 @@ if (PROJECT_IS_TOP_LEVEL)
     add_subdirectory("test")
 
     # Flags for the build
+    target_compile_options(emblib PUBLIC -Wall -Wextra -Wpedantic)
     set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
