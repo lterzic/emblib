@@ -1,39 +1,23 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/task.hpp"
-#else
-#endif
 #include "emblib/utils/chrono.hpp"
+#include "details/task_native.hpp"
 
 namespace emblib::rtos {
 
-/**
- * Statically allocated stack
- */
-template <size_t SIZE_IN_BYTES>
-using task_stack_t = uint8_t[SIZE_IN_BYTES];
+// Statically allocated stack
+template <size_t SIZE_BYTES>
+using task_stack_t = uint8_t[SIZE_BYTES];
 
 /**
- * Thread interface
+ * Task interface
  */
-class task {
-
-public:
-#if EMBLIB_RTOS_USE_FREERTOS
-    using native_task_t = freertos::task;
-#else
-    #error "Task implementation missing"
-#endif
+class task : private details::task_native_t {
 
 public:
     template <size_t STACK_SIZE_BYTES>
-    explicit task(
-        const char* name,
-        size_t priority,
-        task_stack_t<STACK_SIZE_BYTES>& stack
-    );
+    explicit task(const char* name, size_t priority, task_stack_t<STACK_SIZE_BYTES>& stack);
     virtual ~task() = default;
 
     /* Copy operations not allowed */
@@ -55,7 +39,6 @@ public:
      */
     static inline void sleep(milliseconds_t duration) noexcept;
 
-#if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
     /**
      * Increment this task's notification value
      * @note Unblocks this task if is currently waiting on notification
@@ -67,15 +50,6 @@ public:
      * @note Unblocks this task if is currently waiting on notification
      */
     void notify_from_isr() noexcept;
-#endif
-
-    /**
-     * Get reference to the underlying implementation object
-     */
-    native_task_t& get_native_task() noexcept
-    {
-        return m_native_task;
-    }
 
 protected:
     /**
@@ -85,14 +59,14 @@ protected:
      */
     void sleep_periodic(milliseconds_t period) noexcept;
 
-#if EMBLIB_RTOS_SUPPORT_NOTIFICATIONS
     /**
      * Wait for this task to get notified
      * @note Lightweight version of a semaphore which can be
      * taken only by this task
+     * @returns True if the notification was received before
+     * the timeout passed, else false
      */
-    bool wait_notification(milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
-#endif
+    bool wait_notification(milliseconds_t timeout) noexcept;
 
 private:
     /**
@@ -100,19 +74,12 @@ private:
      */
     virtual void run() noexcept = 0;
 
-private:
-    native_task_t m_native_task;
-
 };
 
-
-#if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/details/task_inline.hpp"
-#else
-    #error "Thread implementation missing"
-#endif
-
 }
+
+// Include task implementation based on emblib config
+#include "details/task_impl.hpp"
 
 #if EMBLIB_UNNEST_NAMESPACES
 namespace emblib {

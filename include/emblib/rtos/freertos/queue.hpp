@@ -1,6 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
+#include "task.hpp"
 #include <FreeRTOS.h>
 #include <queue.h>
 
@@ -28,33 +29,35 @@ public:
     /**
      * Queue send
      */
-    bool send(const item_type& item, TickType_t timeout) noexcept
+    bool send(const item_type* item, ticks_t timeout) noexcept
     {
-        return xQueueSend(m_queue_handle, &item, timeout) == pdTRUE;
+        return xQueueSend(m_queue_handle, item, timeout.value()) == pdTRUE;
     }
 
     /**
      * Queue send from ISR
      */
-    bool send_from_isr(const item_type& item) noexcept
+    bool send_from_isr(const item_type* item) noexcept
     {
-        return xQueueSendFromISR(m_queue_handle, &item, NULL) == pdTRUE;
+        return xQueueSendFromISR(m_queue_handle, item, NULL) == pdTRUE;
     }
 
     /**
      * Receive item from queue
      */
-    bool receive(item_type& buffer, TickType_t timeout) noexcept
+    bool receive(item_type* buffer, ticks_t timeout) noexcept
     {
-        return xQueueReceive(m_queue_handle, &buffer, timeout) == pdTRUE;
+        return xQueueReceive(m_queue_handle, buffer, timeout.value()) == pdTRUE;
     }
 
     /**
      * Peek queue
+     * @note Like receive, but doesn't remove the item
+     * from the queue
      */
-    bool peek(item_type& buffer, TickType_t timeout) noexcept
+    bool peek(item_type* buffer, ticks_t timeout) noexcept
     {
-        return xQueuePeek(m_queue_handle, &buffer, timeout) == pdTRUE;
+        return xQueuePeek(m_queue_handle, buffer, timeout.value()) == pdTRUE;
     }
 
 private:
