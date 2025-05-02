@@ -2,17 +2,11 @@
 
 #include "emblib/emblib.hpp"
 #include "sensor3d.hpp"
-#include <cmath>
+#include "emblib/utils/units.hpp"
 
 namespace emblib::driver {
 
-class gyroscope : public sensor3d<float> {
-
-public:
-    /**
-     * Conversion rate from degrees to radians
-     */
-    static constexpr float DEG_TO_RAD = M_PIf / 180.f;
+class gyroscope : public sensor3d<units::unit_t<radian_per_second_t, float>> {
 
 };
 

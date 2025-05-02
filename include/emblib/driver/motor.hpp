@@ -8,10 +8,6 @@ namespace emblib::driver {
 class motor {
 
 public:
-    // Conversion rate from RPM to radians per second
-    static constexpr float RPM_TO_RAD_PER_SEC = 2 * M_PIf / 60;
-
-public:
     /**
      * Default constructor and destructor
      */
