@@ -1,11 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/semaphore.hpp"
-#else
-#endif
 #include "emblib/rtos/task.hpp"
+#include "details/mutex_native.hpp"
 
 namespace emblib::rtos {
 
@@ -13,15 +10,9 @@ namespace emblib::rtos {
  * Mutex
  * @note Can be used with std guards and locks
  */
-class mutex {
+class mutex : private details::mutex_native_t {
 
 public:
-#if EMBLIB_RTOS_USE_FREERTOS
-    using native_mutex_t = freertos::mutex;
-#else
-    #error "Thread implementation missing"
-#endif
-
     explicit mutex() = default;
 
     /* Copy operations not allowed */
@@ -33,30 +24,22 @@ public:
     mutex& operator=(mutex&&) = delete;
 
     /**
-     * Mutex lock
-     * @returns `true` if successful
+     * Try to lock the mutex within the given timeout. If successful
+     * returns true, else false.
      */
     bool lock(milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
 
     /**
-     * Mutex unlock
-     * @returns `true` if successful
+     * Try to unlock the mutex. It will only be successful if
+     * this thread was the one holding the mutex.
      */
     bool unlock() noexcept;
 
-    /**
-     * Get reference to the underlying mutex object
-     */
-    native_mutex_t& get_native_mutex() noexcept
-    {
-        return m_native_mutex;
-    }
-
-private:
-    native_mutex_t m_native_mutex;
-
 };
 
+/**
+ * Locks the mutex until the end of this scope
+ */
 class scoped_lock {
 public:
     explicit scoped_lock(mutex& mutex) noexcept :
@@ -74,14 +57,10 @@ private:
     mutex& m_mutex;
 };
 
-
-#if EMBLIB_RTOS_USE_FREERTOS
-    #include "./freertos/details/mutex_inline.hpp"
-#else
-#error "Mutex implementation missing"
-#endif
-
 }
+
+// Include mutex implementation based on emblib config
+#include "details/mutex_impl.hpp"
 
 #if EMBLIB_UNNEST_NAMESPACES
 namespace emblib {

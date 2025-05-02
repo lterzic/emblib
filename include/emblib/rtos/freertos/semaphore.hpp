@@ -1,33 +1,40 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
+#include "task.hpp"
 #include <FreeRTOS.h>
 #include <semphr.h>
 
 namespace emblib::rtos::freertos {
 
 /**
+ * Possible FreeRTOS semaphore implementations
+ */
+enum class semaphore_type_e {
+    BINARY,
+    COUNTING,
+    MUTEX
+};
+
+/**
  * FreeRTOS semaphore
  */
+template <semaphore_type_e TYPE = semaphore_type_e::BINARY>
 class semaphore {
 
 public:
-    explicit semaphore(bool is_mutex = false) noexcept :
+    template <semaphore_type_e type = TYPE, typename = std::enable_if_t<type != semaphore_type_e::COUNTING>>
+    explicit semaphore() noexcept :
         m_semaphore_handle(
-            is_mutex ?
+            TYPE == semaphore_type_e::MUTEX ?
             xSemaphoreCreateMutexStatic(&m_semaphore_buffer) :
             xSemaphoreCreateBinaryStatic(&m_semaphore_buffer))
     {}
 
+    template <semaphore_type_e type = TYPE, typename = std::enable_if_t<type == semaphore_type_e::COUNTING>>
     explicit semaphore(size_t max_count, size_t initial_count = 0) noexcept :
         m_semaphore_handle(xSemaphoreCreateCountingStatic(max_count, initial_count, &m_semaphore_buffer))
     {}
-
-    /* This is used to create a mutex as a class with a default constructor */
-    virtual ~semaphore() = default;
-
-    /** @todo Can add non virtual destructors for task, semaphore, queue which
-     * delete the corresponding handle object */
 
     /* Copy operations not allowed */
     semaphore(const semaphore&) = delete;
@@ -42,9 +49,9 @@ public:
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
-    bool take(TickType_t ticks) noexcept
+    bool take(ticks_t ticks) noexcept
     {
-        return xSemaphoreTake(m_semaphore_handle, ticks) == pdTRUE;
+        return xSemaphoreTake(m_semaphore_handle, ticks.value()) == pdTRUE;
     }
 
     /**
@@ -73,14 +80,6 @@ private:
 
 };
 
-
-class mutex : public semaphore {
-
-public:
-    explicit mutex() noexcept :
-        semaphore(true)
-    {}
-
-};
+using mutex = semaphore<semaphore_type_e::MUTEX>;
 
 }
