@@ -1,22 +1,16 @@
 #pragma once
 
+// Allows for using all emblib definitions from the emblib namespace
+// instead of nesting them (emblib::mutex instead of emblib::rtos::mutex, etc)
 #define EMBLIB_UNNEST_NAMESPACES    1
 
+// Allows passing etl strings to char devices for write operations
 #define EMBLIB_CHAR_DEV_SUPPORT_ETL 1
 
+// Select the RTOS backend
 #define EMBLIB_RTOS_USE_FREERTOS    1
 #define EMBLIB_RTOS_USE_THREADX     0
-#define EMBLIB_RTOS_TICK_MILLIS     1
-#define EMBLIB_RTOS_SUPPORT_NOTIFICATIONS 1
 
+// Select the math backend
 #define EMBLIB_MATH_USE_GLM         0
 #define EMBLIB_MATH_USE_EIGEN       1
-
-namespace emblib {
-
-/**
- * Capacity for the output channel wrapper class vector
- */
-static constexpr int I2C_MUX_MAX_CHANNELS = 8;
-
-}
