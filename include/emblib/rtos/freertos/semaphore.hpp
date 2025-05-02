@@ -49,9 +49,9 @@ public:
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
-    bool take(ticks_t ticks) noexcept
+    bool take(ticks_t timeout) noexcept
     {
-        return xSemaphoreTake(m_semaphore_handle, ticks.value()) == pdTRUE;
+        return xSemaphoreTake(m_semaphore_handle, timeout.value()) == pdTRUE;
     }
 
     /**

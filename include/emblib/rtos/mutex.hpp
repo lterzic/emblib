@@ -1,7 +1,6 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/rtos/task.hpp"
 #include "details/mutex_native.hpp"
 
 namespace emblib::rtos {
