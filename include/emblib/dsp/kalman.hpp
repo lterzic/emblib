@@ -132,6 +132,7 @@ inline void kalman<STATE_DIM, scalar_type>::update(
     };
 
     auto Fj = [&F](const vec_t<STATE_DIM>& state) {
+        UNUSED(state);
         return F;
     };
 
@@ -140,6 +141,7 @@ inline void kalman<STATE_DIM, scalar_type>::update(
     };
 
     auto Hj = [&H](const vec_t<STATE_DIM>& state) {
+        UNUSED(state);
         return H;
     };
 
