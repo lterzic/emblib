@@ -2,8 +2,6 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/utils/chrono.hpp"
-
-// Define task_native_t based on emblib config
 #include "details/task_native.hpp"
 
 namespace emblib::rtos {
@@ -15,7 +13,7 @@ using task_stack_t = uint8_t[SIZE_BYTES];
 /**
  * Task interface
  */
-class task : private task_native_t {
+class task : private details::task_native_t {
 
 public:
     template <size_t STACK_SIZE_BYTES>

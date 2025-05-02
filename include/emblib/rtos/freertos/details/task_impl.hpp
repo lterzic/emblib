@@ -7,7 +7,7 @@ namespace emblib::rtos {
 
 template <size_t STACK_SIZE_BYTES>
 inline task::task(const char* name, size_t priority, task_stack_t<STACK_SIZE_BYTES>& stack) :
-    task_native_t(name, priority, (freertos::task_stack_t<sizeof(stack) / sizeof(freertos::task_stack_t<1>)>&)stack)
+    details::task_native_t(name, priority, (freertos::task_stack_t<sizeof(stack) / sizeof(freertos::task_stack_t<1>)>&)stack)
 {}
 
 inline void task::start_tasks()

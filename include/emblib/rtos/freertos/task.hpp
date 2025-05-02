@@ -4,7 +4,6 @@
 #include "emblib/utils/chrono.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
-#include <cstdint>
 
 namespace emblib::rtos::freertos {
 
