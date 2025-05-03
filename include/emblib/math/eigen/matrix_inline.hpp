@@ -1,7 +1,6 @@
 #pragma once
 
 #include "emblib/math/matrix.hpp"
-#include <Eigen/Dense>
 
 namespace emblib::math {
 
@@ -12,7 +11,7 @@ inline matrix<scalar_type, ROWS, COLS, base_type>::matrix(scalar_type scalar) no
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline matrix<scalar_type, ROWS, COLS, base_type>::matrix(const std::initializer_list<std::initializer_list<scalar_type>>& elements) noexcept
+inline matrix<scalar_type, ROWS, COLS, base_type>::matrix(std::initializer_list<std::initializer_list<scalar_type>> elements) noexcept
     : m_base(elements)
 {
 }
@@ -53,57 +52,72 @@ template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
     auto res = (m_base.array() * rhs.get_base().array()).matrix();
     return matrix_same_t<decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-template <typename rhs_scalar, typename rhs_base>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_shaped_t<rhs_scalar, rhs_base> &rhs) const noexcept
-{
-    auto res = (m_base.array().template cast<rhs_scalar>() * rhs.get_base().array()).matrix();
-    return matrix_shaped_t<rhs_scalar, decltype(res)>(res);
-}
-
-template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const scalar_type &rhs) const noexcept
 {
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
     auto res = m_base * rhs;
     return matrix_same_t<decltype(res)>(res);
-}
-
-template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const scalar_type &rhs) noexcept
-{
-    m_base *= rhs;
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const matrix_same_t<rhs_base> &rhs) noexcept
 {
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
     m_base.array() *= rhs.get_base().array();
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const scalar_type &rhs) const noexcept
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const scalar_type &rhs) noexcept
 {
-    auto res = m_base / rhs;
-    return matrix_same_t<decltype(res)>(res);
-}
-
-template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline void matrix<scalar_type, ROWS, COLS, base_type>::operator/=(const scalar_type &rhs) noexcept
-{
-    m_base /= rhs;
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
+    m_base *= rhs;
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
     auto res = (m_base.array() / rhs.get_base().array()).matrix();
     return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const scalar_type &rhs) const noexcept
+{
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
+    auto res = m_base / rhs;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator/=(const matrix_same_t<rhs_base> &rhs) noexcept
+{
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
+    m_base.array() /= rhs.get_base().array();
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator/=(const scalar_type &rhs) noexcept
+{
+    // Only works if the result type is the same as the scalar type
+    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
+    m_base /= rhs;
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -118,7 +132,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator<(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() < rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -126,7 +140,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator<=(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() <= rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -134,7 +148,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator>(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() > rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -142,7 +156,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator>=(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() >= rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -150,7 +164,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator==(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() == rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -158,7 +172,7 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator&&(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() && rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -166,14 +180,14 @@ template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator||(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = (m_base.array() || rhs.get_base().array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator!() const noexcept
 {
     auto res = (!m_base.array()).matrix();
-    return matrix_bool_t<decltype(res)>(res);
+    return matrix_similar_t<bool, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>

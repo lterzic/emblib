@@ -42,7 +42,7 @@ public:
 
         if (m_clamp) {
             // Only contributing to the integral when not saturated
-            m_integral += !m_saturated * input;
+            m_integral += (scalar_type)!m_saturated * input;
 
             // Check whether there is saturation
             auto sat_high = m_output >= m_clamp_high;
@@ -50,8 +50,8 @@ public:
             m_saturated = sat_high || sat_low;
             
             // Vector (arithmetic) implementation of clamping the output
-            m_output = !sat_high * m_output + sat_high * m_clamp_high;
-            m_output = !sat_low * m_output + sat_low * m_clamp_low;
+            m_output = (scalar_type)!sat_high * m_output + (scalar_type)sat_high * m_clamp_high;
+            m_output = (scalar_type)!sat_low * m_output + (scalar_type)sat_low * m_clamp_low;
         } else {
             m_integral += input;
         }

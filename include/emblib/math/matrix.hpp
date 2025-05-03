@@ -17,13 +17,26 @@ template <
 class matrix {
 
 public:
-    template <typename other_base>
-    using matrix_same_t = matrix<scalar_type, ROWS, COLS, other_base>;
-    template <typename other_scalar, typename other_base>
-    using matrix_shaped_t = matrix<other_scalar, ROWS, COLS, other_base>;
-    template <typename other_base>
-    using matrix_bool_t = matrix<bool, ROWS, COLS, other_base>;
+    /**
+     * Type definition for a matrix of same shape but different scalar
+     */
+    template <typename other_scalar_type, typename other_base_type>
+    using matrix_similar_t = matrix<other_scalar_type, ROWS, COLS, other_base_type>;
 
+    /**
+     * Type definition for a matrix same as this one except for the
+     * underlying implementation
+     */
+    template <typename other_base_type>
+    using matrix_same_t = matrix_similar_t<scalar_type, other_base_type>;
+
+    /**
+     * Used when static casting to this type
+     * @note See operator typecast method
+     */
+    using scalar_type_trait = scalar_type;
+
+public:
     /**
      * Base constructor for creating this wrapper from implementation types
      */
@@ -36,10 +49,10 @@ public:
     matrix(const matrix_same_t<other_base>& other) noexcept : m_base(other.get_base()) {}
 
     /**
-     * Base constructor for creating this out of a bool matrix
+     * Base constructor for implicitly casting a bool matrix to this scalar type
      */
     template <typename other_base, typename = std::enable_if<!std::is_same_v<scalar_type, bool>>>
-    matrix(const matrix_bool_t<other_base>& other) noexcept : m_base(other.template cast<scalar_type>().get_base()) {}
+    matrix(const matrix_similar_t<bool, other_base>& other) noexcept : m_base(other.template cast<scalar_type>().get_base()) {}
 
     /**
      * Initialize all the elements of the matrix to `scalar`
@@ -50,7 +63,7 @@ public:
      * Initialize the matrix with the elements
      * @todo Change to fixed size arrays
      */
-    matrix(const std::initializer_list<std::initializer_list<scalar_type>>& elements) noexcept;
+    matrix(std::initializer_list<std::initializer_list<scalar_type>> elements) noexcept;
 
     /**
      * Get reference to the underlying matrix expression
@@ -67,7 +80,16 @@ public:
     auto cast() const noexcept
     {
         auto casted_base = cast_base<cast_type>();
-        return matrix<cast_type, ROWS, COLS, decltype(casted_base)>(casted_base);
+        return matrix_similar_t<cast_type, decltype(casted_base)>(casted_base);
+    }
+
+    /**
+     * Casting operator
+     */
+    template <typename cast_type>
+    explicit operator cast_type() const noexcept
+    {
+        return cast<typename cast_type::scalar_type_trait>();
     }
 
     /**
@@ -117,26 +139,20 @@ public:
     auto operator*(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
-     * Element-wise multiplication of possibly different scalar type
-     */
-    template <typename rhs_scalar, typename rhs_base>
-    auto operator*(const matrix_shaped_t<rhs_scalar, rhs_base>& rhs) const noexcept;
-
-    /**
      * Element-wise multiplication with a scalar
      */
     auto operator*(const scalar_type& rhs) const noexcept;
-
-    /**
-     * Element-wise in-place multiplication with a scalar
-     */
-    void operator*=(const scalar_type& rhs) noexcept;
 
     /**
      * Element-wise multiplication in-place
      */
     template <typename rhs_base>
     void operator*=(const matrix_same_t<rhs_base>& rhs) noexcept;
+
+    /**
+     * Element-wise in-place multiplication with a scalar
+     */
+    void operator*=(const scalar_type& rhs) noexcept;
 
     /**
      * Element-wise division
@@ -148,6 +164,12 @@ public:
      * Element-wise division with a scalar
      */
     auto operator/(const scalar_type& rhs) const noexcept;
+
+    /**
+     * Element-wise division in-place
+     */
+    template <typename rhs_base>
+    void operator/=(const matrix_same_t<rhs_base>& rhs) noexcept;
 
     /**
      * Element-wise in-place division with a scalar
@@ -287,7 +309,7 @@ public:
     static matrix diagonal(scalar_type diag_elem = 1) noexcept
     {
         static_assert(ROWS == COLS);
-        matrix result {0};
+        matrix result(0);
         for (size_t i = 0; i < ROWS; i++)
             result(i, i) = diag_elem;
         return result;
