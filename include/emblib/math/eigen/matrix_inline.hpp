@@ -1,8 +1,13 @@
 #pragma once
 
+#include "emblib/math/matrix.hpp"
+#include <Eigen/Dense>
+
+namespace emblib::math {
+
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline matrix<scalar_type, ROWS, COLS, base_type>::matrix(scalar_type scalar) noexcept
-    : m_base(matrix_native_t<scalar_type, ROWS, COLS>::Constant(scalar))
+    : m_base(Eigen::Matrix<scalar_type, ROWS, COLS>::Constant(scalar))
 {
 }
 
@@ -210,4 +215,6 @@ template <typename cast_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::cast_base() const noexcept
 {
     return m_base.template cast<cast_type>();
+}
+
 }

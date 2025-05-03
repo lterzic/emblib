@@ -1,33 +1,9 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-
-#if EMBLIB_MATH_USE_GLM
-    #include <glm/matrix.hpp>
-#elif EMBLIB_MATH_USE_EIGEN
-    #define EIGEN_NO_MALLOC
-    #include <Eigen/Dense>
-#elif EMBLIB_MATH_USE_XTENSOR
-    #define XTENSOR_ENABLE_ASSERT
-    #define XTENSOR_CHECK_DIMENSIONS
-    #include <xtensor/xfixed.hpp>
-    #include <xtensor-blas/xlinalg.hpp>
-#else
-    #include <array>
-#endif
+#include "details/matrix_native.hpp"
 
 namespace emblib::math {
-
-#if EMBLIB_MATH_USE_GLM
-    template <typename scalar_t, size_t rows, size_t cols>
-    using matrix = glm::mat<cols, rows, scalar_t, glm::defaultp>;
-#elif EMBLIB_MATH_USE_EIGEN
-    template <typename scalar_type, size_t ROWS, size_t COLS = ROWS>
-    using matrix_native_t = Eigen::Matrix<scalar_type, ROWS, COLS>;
-#else
-    #error "Matrix implementation not defined"
-#endif
-
 
 /**
  * Matrix
@@ -36,7 +12,7 @@ template <
     typename scalar_type,
     size_t ROWS,
     size_t COLS = ROWS,
-    typename base_type = matrix_native_t<scalar_type, ROWS, COLS>
+    typename base_type = details::matrix_native_t<scalar_type, ROWS, COLS>
 >
 class matrix {
 
@@ -339,14 +315,9 @@ auto operator*(const scalar_type& lhs, const matrix<scalar_type, ROWS, COLS, mat
 template <size_t ROWS, size_t COLS = ROWS>
 using matrixf = matrix<float, ROWS, COLS>;
 
-
-#if EMBLIB_MATH_USE_GLM
-#elif EMBLIB_MATH_USE_EIGEN
-    #include "eigen/matrix_inline.hpp"
-#else
-#endif
-
 }
+
+#include "details/matrix_impl.hpp"
 
 #if EMBLIB_UNNEST_NAMESPACES
 namespace emblib {

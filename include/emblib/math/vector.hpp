@@ -12,7 +12,7 @@ namespace emblib::math {
 template <
     typename scalar_type,
     size_t DIM,
-    typename base_type = matrix_native_t<scalar_type, DIM, 1>
+    typename base_type = details::matrix_native_t<scalar_type, DIM, 1>
 >
 class vector : public matrix<scalar_type, DIM, 1, base_type> {
 
@@ -119,10 +119,8 @@ public:
     }
 };
 
-
 template <size_t DIM>
 using vectorf = vector<float, DIM>;
-
 
 using vector3f = vectorf<3>;
 
