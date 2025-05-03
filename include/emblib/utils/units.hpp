@@ -4,8 +4,6 @@
 
 namespace emblib {
 
-// Definitions of commonly used units
-
 using second_t = units::unit<std::ratio<1>, units::category::time_unit>;
 using minute_t = units::unit<std::ratio<60>, second_t>;
 using millisecond_t = units::unit<std::ratio<1, 1000>, second_t>;

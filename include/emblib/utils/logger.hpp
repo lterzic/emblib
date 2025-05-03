@@ -1,6 +1,6 @@
 #pragma once
 
-#include "emblib/driver/char_dev.hpp"
+#include "emblib/driver/io/char_dev.hpp"
 #include "emblib/rtos/mutex.hpp"
 
 #include <etl/string.h>
