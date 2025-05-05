@@ -1,6 +1,29 @@
 #pragma once
 
 #include "emblib/math/matrix.hpp"
+#include "emblib/utils/units.hpp"
+
+namespace Eigen {
+
+template <typename lhs_unit, typename rhs_unit, typename scalar>
+struct ScalarBinaryOpTraits<
+    units::unit_t<lhs_unit, scalar>,
+    units::unit_t<rhs_unit, scalar>,
+    internal::scalar_product_op<units::unit_t<lhs_unit, scalar>, units::unit_t<rhs_unit, scalar>>
+> {
+    using ReturnType = units::unit_t<units::compound_unit<lhs_unit, rhs_unit>, scalar>;
+};
+
+template <typename lhs_unit, typename rhs_unit, typename scalar>
+struct ScalarBinaryOpTraits<
+    units::unit_t<lhs_unit, scalar>,
+    units::unit_t<rhs_unit, scalar>,
+    internal::scalar_quotient_op<units::unit_t<lhs_unit, scalar>, units::unit_t<rhs_unit, scalar>>
+> {
+    using ReturnType = units::unit_t<units::compound_unit<lhs_unit, units::inverse<rhs_unit>>, scalar>;
+};
+
+}
 
 namespace emblib::math {
 
@@ -49,22 +72,21 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator-(const matrix_s
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-template <typename rhs_base>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_same_t<rhs_base> &rhs) const noexcept
+template <typename rhs_scalar, typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const matrix_similar_t<rhs_scalar, rhs_base> &rhs) const noexcept
 {
-    // Only works if the result type is the same as the scalar type
-    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
     auto res = (m_base.array() * rhs.get_base().array()).matrix();
-    return matrix_same_t<decltype(res)>(res);
+    using res_scalar_t = typename Eigen::ScalarBinaryOpTraits<scalar_type, rhs_scalar, Eigen::internal::scalar_product_op<scalar_type, rhs_scalar>>::ReturnType;
+    return matrix_similar_t<res_scalar_t, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const scalar_type &rhs) const noexcept
+template <typename rhs_scalar>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator*(const rhs_scalar &rhs) const noexcept
 {
-    // Only works if the result type is the same as the scalar type
-    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() * std::declval<scalar_type>()), scalar_type>);
     auto res = m_base * rhs;
-    return matrix_same_t<decltype(res)>(res);
+    using res_scalar_t = typename Eigen::ScalarBinaryOpTraits<scalar_type, rhs_scalar, Eigen::internal::scalar_product_op<scalar_type, rhs_scalar>>::ReturnType;
+    return matrix_similar_t<res_scalar_t, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -85,22 +107,21 @@ inline void matrix<scalar_type, ROWS, COLS, base_type>::operator*=(const scalar_
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-template <typename rhs_base>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_same_t<rhs_base> &rhs) const noexcept
+template <typename rhs_scalar, typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const matrix_similar_t<rhs_scalar, rhs_base> &rhs) const noexcept
 {
-    // Only works if the result type is the same as the scalar type
-    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
     auto res = (m_base.array() / rhs.get_base().array()).matrix();
-    return matrix_same_t<decltype(res)>(res);
+    using res_scalar_t = typename Eigen::ScalarBinaryOpTraits<scalar_type, rhs_scalar, Eigen::internal::scalar_quotient_op<scalar_type, rhs_scalar>>::ReturnType;
+    return matrix_similar_t<res_scalar_t, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const scalar_type &rhs) const noexcept
+template <typename rhs_scalar>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator/(const rhs_scalar &rhs) const noexcept
 {
-    // Only works if the result type is the same as the scalar type
-    static_assert(std::is_same_v<decltype(std::declval<scalar_type>() / std::declval<scalar_type>()), scalar_type>);
     auto res = m_base / rhs;
-    return matrix_same_t<decltype(res)>(res);
+    using res_scalar_t = typename Eigen::ScalarBinaryOpTraits<scalar_type, rhs_scalar, Eigen::internal::scalar_quotient_op<scalar_type, rhs_scalar>>::ReturnType;
+    return matrix_similar_t<res_scalar_t, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>

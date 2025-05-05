@@ -55,7 +55,7 @@ public:
     matrix(const matrix_similar_t<bool, other_base>& other) noexcept : m_base(other.template cast<scalar_type>().get_base()) {}
 
     /**
-     * Initialize all the elements of the matrix to `scalar`
+     * Initialize all the elements of the matrix with the same value
      */
     matrix(scalar_type scalar) noexcept;
 
@@ -135,13 +135,14 @@ public:
     /**
      * Element-wise multiplication
      */
-    template <typename rhs_base>
-    auto operator*(const matrix_same_t<rhs_base>& rhs) const noexcept;
+    template <typename rhs_scalar, typename rhs_base>
+    auto operator*(const matrix_similar_t<rhs_scalar, rhs_base>& rhs) const noexcept;
 
     /**
      * Element-wise multiplication with a scalar
      */
-    auto operator*(const scalar_type& rhs) const noexcept;
+    template <typename rhs_scalar>
+    auto operator*(const rhs_scalar& rhs) const noexcept;
 
     /**
      * Element-wise multiplication in-place
@@ -157,13 +158,14 @@ public:
     /**
      * Element-wise division
      */
-    template <typename rhs_base>
-    auto operator/(const matrix_same_t<rhs_base>& rhs) const noexcept;
+    template <typename rhs_scalar, typename rhs_base>
+    auto operator/(const matrix_similar_t<rhs_scalar, rhs_base>& rhs) const noexcept;
 
     /**
      * Element-wise division with a scalar
      */
-    auto operator/(const scalar_type& rhs) const noexcept;
+    template <typename rhs_scalar>
+    auto operator/(const rhs_scalar& rhs) const noexcept;
 
     /**
      * Element-wise division in-place
