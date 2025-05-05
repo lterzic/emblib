@@ -119,10 +119,24 @@ public:
     }
 };
 
+/**
+ * Multiplication operator overloading to prevent treating
+ * a vector as a scalar when multiplying a matrix
+ */
 template <typename lhs_scalar, typename rhs_scalar, size_t DIM, typename lhs_base, typename rhs_base>
 auto operator*(const matrix<lhs_scalar, DIM, 1, lhs_base>& lhs, const vector<rhs_scalar, DIM, rhs_base>& rhs) noexcept
 {
     return lhs * static_cast<const matrix<rhs_scalar, DIM, 1, rhs_base>&>(rhs);
+}
+
+/**
+ * Division operator overloading to prevent treating
+ * a vector as a scalar when dividing a matrix
+ */
+template <typename lhs_scalar, typename rhs_scalar, size_t DIM, typename lhs_base, typename rhs_base>
+auto operator/(const matrix<lhs_scalar, DIM, 1, lhs_base>& lhs, const vector<rhs_scalar, DIM, rhs_base>& rhs) noexcept
+{
+    return lhs / static_cast<const matrix<rhs_scalar, DIM, 1, rhs_base>&>(rhs);
 }
 
 template <size_t DIM>

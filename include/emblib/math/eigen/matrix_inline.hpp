@@ -5,6 +5,17 @@
 
 namespace Eigen {
 
+/**
+ * Numerical traits for unit types are the same
+ * as for the underlying built in types
+ * @todo Not necessary, can remove
+ */
+template<typename unit_type, typename scalar_type>
+struct NumTraits<units::unit_t<unit_type, scalar_type>> : public NumTraits<scalar_type> {};
+
+/**
+ * Define how multiplication behaves when the scalars are units
+ */
 template <typename lhs_unit, typename rhs_unit, typename scalar>
 struct ScalarBinaryOpTraits<
     units::unit_t<lhs_unit, scalar>,
@@ -14,6 +25,9 @@ struct ScalarBinaryOpTraits<
     using ReturnType = units::unit_t<units::compound_unit<lhs_unit, rhs_unit>, scalar>;
 };
 
+/**
+ * Define how division behaves when the scalars are units
+ */
 template <typename lhs_unit, typename rhs_unit, typename scalar>
 struct ScalarBinaryOpTraits<
     units::unit_t<lhs_unit, scalar>,
@@ -64,11 +78,51 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator+(const matrix_s
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator+(const scalar_type &rhs) const noexcept
+{
+    auto res = m_base + rhs;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator+=(const matrix_same_t<rhs_base> &rhs) noexcept
+{
+    m_base += rhs.get_base();
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator+=(const scalar_type &rhs) noexcept
+{
+    m_base += rhs;
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 template <typename rhs_base>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator-(const matrix_same_t<rhs_base> &rhs) const noexcept
 {
     auto res = m_base - rhs.get_base();
     return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator-(const scalar_type &rhs) const noexcept
+{
+    auto res = m_base - rhs;
+    return matrix_same_t<decltype(res)>(res);
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+template <typename rhs_base>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator-=(const matrix_same_t<rhs_base> &rhs) noexcept
+{
+    m_base -= rhs.get_base();
+}
+
+template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
+inline void matrix<scalar_type, ROWS, COLS, base_type>::operator-=(const scalar_type &rhs) noexcept
+{
+    m_base -= rhs;
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
@@ -207,7 +261,7 @@ inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator||(const matrix_
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
 inline auto matrix<scalar_type, ROWS, COLS, base_type>::operator!() const noexcept
 {
-    auto res = (!m_base.array()).matrix();
+    auto res = (!m_base.template cast<bool>().array()).matrix();
     return matrix_similar_t<bool, decltype(res)>(res);
 }
 

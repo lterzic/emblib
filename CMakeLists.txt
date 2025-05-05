@@ -37,7 +37,8 @@ add_subdirectory("lib/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
-    # EIGEN_NO_MALLOC
+    EIGEN_NO_MALLOC
+    EIGEN_NO_IO
     UNIT_LIB_DISABLE_IOSTREAM
     DISABLE_PREDEFINED_UNITS
 )

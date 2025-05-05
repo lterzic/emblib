@@ -3,7 +3,6 @@
 #include "emblib/emblib.hpp"
 
 #if EMBLIB_MATH_USE_EIGEN
-    #define EIGEN_NO_MALLOC
     #include <Eigen/Dense>
 #elif EMBLIB_MATH_USE_XTENSOR
     #define XTENSOR_ENABLE_ASSERT

@@ -127,10 +127,42 @@ public:
     auto operator+(const matrix_same_t<rhs_base>& rhs) const noexcept;
 
     /**
+     * Element-wise addition with a scalar
+     */
+    auto operator+(const scalar_type& rhs) const noexcept;
+
+    /**
+     * Element-wise addition in-place
+     */
+    template <typename rhs_base>
+    void operator+=(const matrix_same_t<rhs_base>& rhs) noexcept;
+
+    /**
+     * Element-wise addition in-place with a scalar
+     */
+    void operator+=(const scalar_type& rhs) noexcept;
+
+    /**
      * Element-wise subtraction
      */
     template <typename rhs_base>
     auto operator-(const matrix_same_t<rhs_base>& rhs) const noexcept;
+
+    /**
+     * Element-wise subtraction with a scalar
+     */
+    auto operator-(const scalar_type& rhs) const noexcept;
+
+    /**
+     * Element-wise subtraction in-place
+     */
+    template <typename rhs_base>
+    void operator-=(const matrix_same_t<rhs_base>& rhs) noexcept;
+
+    /**
+     * Element-wise subtraction in-place with a scalar
+     */
+    void operator-=(const scalar_type& rhs) noexcept;
 
     /**
      * Element-wise multiplication
@@ -267,26 +299,6 @@ public:
     }
 
     /**
-     * Element-wise addition in-place
-     */
-    template <typename rhs_base>
-    matrix& operator+=(const matrix_same_t<rhs_base>& rhs) noexcept
-    {
-        m_base += rhs.get_base();
-        return *this;
-    }
-
-    /**
-     * Element-wise subtraction in-place
-     */
-    template <typename rhs_base>
-    matrix& operator-=(const matrix_same_t<rhs_base>& rhs) noexcept
-    {
-        m_base -= rhs.get_base();
-        return *this;
-    }
-
-    /**
      * Assign a submatrix
      */
     template <size_t OTHER_ROWS, size_t OTHER_COLS, typename other_base>
@@ -327,6 +339,9 @@ private:
 
 /** @todo Add external operators for scalar + matrix, ... */
 
+/**
+ * External operator for multiplying a scalar by a matrix
+ */
 template <typename scalar_type, size_t ROWS, size_t COLS, typename matrix_base>
 auto operator*(const scalar_type& lhs, const matrix<scalar_type, ROWS, COLS, matrix_base>& rhs) noexcept
 {
