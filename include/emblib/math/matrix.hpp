@@ -280,8 +280,8 @@ public:
     /**
      * Matrix multiplication
      */
-    template <size_t COLS_RHS, typename rhs_base>
-    auto matmul(const matrix<scalar_type, COLS, COLS_RHS, rhs_base>& rhs) const noexcept;
+    template <size_t RHS_COLS, typename rhs_scalar, typename rhs_base>
+    auto matmul(const matrix<rhs_scalar, COLS, RHS_COLS, rhs_base>& rhs) const noexcept;
 
     /**
      * Equivalent to multiplying this matrix from the left by the inverse of the divisor

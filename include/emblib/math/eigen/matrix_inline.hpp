@@ -26,6 +26,18 @@ struct ScalarBinaryOpTraits<
 };
 
 /**
+ * Template specialization for multiplying same unit scalars
+ */
+template <typename unit, typename scalar>
+struct ScalarBinaryOpTraits<
+    units::unit_t<unit, scalar>,
+    units::unit_t<unit, scalar>,
+    internal::scalar_product_op<units::unit_t<unit, scalar>, units::unit_t<unit, scalar>>
+> {
+    using ReturnType = units::unit_t<units::squared<unit>, scalar>;
+};
+
+/**
  * Define how division behaves when the scalars are units
  */
 template <typename lhs_unit, typename rhs_unit, typename scalar>
@@ -35,6 +47,42 @@ struct ScalarBinaryOpTraits<
     internal::scalar_quotient_op<units::unit_t<lhs_unit, scalar>, units::unit_t<rhs_unit, scalar>>
 > {
     using ReturnType = units::unit_t<units::compound_unit<lhs_unit, units::inverse<rhs_unit>>, scalar>;
+};
+
+/**
+ * Template specialization for dividing same unit scalars
+ */
+template <typename unit, typename scalar>
+struct ScalarBinaryOpTraits<
+    units::unit_t<unit, scalar>,
+    units::unit_t<unit, scalar>,
+    internal::scalar_quotient_op<units::unit_t<unit, scalar>, units::unit_t<unit, scalar>>
+> {
+    using ReturnType = units::unit_t<units::dimensionless::scalar, scalar>;
+};
+
+/**
+ * Template specialization for operations between units and scalars
+ */
+template <typename unit, typename scalar, typename op>
+struct ScalarBinaryOpTraits<
+    units::unit_t<unit, scalar>,
+    scalar,
+    op
+> {
+    using ReturnType = units::unit_t<unit, scalar>;
+};
+
+/**
+ * Template specialization for operations between scalars and units
+ */
+template <typename unit, typename scalar, typename op>
+struct ScalarBinaryOpTraits<
+    scalar,
+    units::unit_t<unit, scalar>,
+    op
+> {
+    using ReturnType = units::unit_t<unit, scalar>;
 };
 
 }
@@ -284,11 +332,12 @@ inline void matrix<scalar_type, ROWS, COLS, base_type>::fill(scalar_type scalar)
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
-template <size_t COLS_RHS, typename rhs_base>
-inline auto matrix<scalar_type, ROWS, COLS, base_type>::matmul(const matrix<scalar_type, COLS, COLS_RHS, rhs_base> &rhs) const noexcept
+template <size_t RHS_COLS, typename rhs_scalar, typename rhs_base>
+inline auto matrix<scalar_type, ROWS, COLS, base_type>::matmul(const matrix<rhs_scalar, COLS, RHS_COLS, rhs_base> &rhs) const noexcept
 {
     auto res = m_base * rhs.get_base();
-    return matrix<scalar_type, ROWS, COLS_RHS, decltype(res)>(res);
+    using res_scalar_t = typename Eigen::ScalarBinaryOpTraits<scalar_type, rhs_scalar, Eigen::internal::scalar_product_op<scalar_type, rhs_scalar>>::ReturnType;
+    return matrix<res_scalar_t, ROWS, RHS_COLS, decltype(res)>(res);
 }
 
 template <typename scalar_type, size_t ROWS, size_t COLS, typename base_type>
