@@ -18,7 +18,7 @@ using rotation_t = units::unit<std::ratio<360>, degree_t>;
 
 using meter_per_second_t = units::compound_unit<meter_t, units::inverse<second_t>>;
 using meter_per_second_squared_t = units::compound_unit<meter_per_second_t, units::inverse<second_t>>;
-using standard_gravity_t = units::unit<std::ratio<980655, 100000>, meter_per_second_squared_t>;
+using standard_gravity_t = units::unit<std::ratio<980665, 100000>, meter_per_second_squared_t>;
 
 using radian_per_second_t = units::compound_unit<radian_t, units::inverse<second_t>>;
 using degree_per_second_t = units::compound_unit<degree_t, units::inverse<second_t>>;

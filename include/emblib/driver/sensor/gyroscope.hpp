@@ -6,7 +6,7 @@
 
 namespace emblib::driver {
 
-class gyroscope : public sensor3d<units::unit_t<radian_per_second_t, float>> {
+class gyroscope : public sensor3d<units::unit_t<degree_per_second_t, float>> {
 
 };
 

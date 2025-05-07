@@ -34,7 +34,7 @@ public:
      * @note Default implementation is to read all 3 axes one by one, but
      * can be overriden to allow reading of all the values in one bus transaction
      */
-    virtual bool read(vector<axis_data_type, 3>& out) override noexcept
+    virtual bool read(vector<axis_data_type, 3>& out) noexcept override
     {
         bool success = true;
         success &= read_axis(axis_e::X, out((int)axis_e::X));
