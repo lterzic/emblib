@@ -24,4 +24,10 @@ using radian_per_second_t = units::compound_unit<radian_t, units::inverse<second
 using degree_per_second_t = units::compound_unit<degree_t, units::inverse<second_t>>;
 using rotation_per_minute_t = units::compound_unit<rotation_t, units::inverse<minute_t>>;
 
+template <typename unit_lhs, typename unit_rhs>
+inline constexpr bool are_same_dim_units = std::is_same_v<
+    typename unit_lhs::base_unit_type,
+    typename unit_rhs::base_unit_type
+>;
+
 }
