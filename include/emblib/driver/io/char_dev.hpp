@@ -2,12 +2,11 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/utils/chrono.hpp"
+#include <etl/delegate.h>
 
 #if EMBLIB_CHAR_DEV_SUPPORT_ETL
 #include <etl/string.h>
 #endif
-
-#include <functional>
 
 namespace emblib::driver {
 
@@ -20,7 +19,7 @@ class char_dev {
 
 public:
     /* Typedef of callback functions for async operations */
-    using callback_t = std::function<void(ssize_t)>;
+    using callback_t = etl::delegate<void(ssize_t)>;
 
     explicit char_dev() = default;
     virtual ~char_dev() = default;

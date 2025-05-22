@@ -3,7 +3,7 @@
 #include "emblib/emblib.hpp"
 #include "emblib/math/matrix.hpp"
 #include "emblib/math/vector.hpp"
-#include <functional>
+#include <etl/delegate.h>
 
 namespace emblib::dsp {
 
@@ -42,10 +42,10 @@ public:
      */
     template <size_t OBS_DIM>
     void update(
-        std::function<vec_t<STATE_DIM> (const vec_t<STATE_DIM>&)> f,
-        std::function<mat_t<STATE_DIM> (const vec_t<STATE_DIM>&)> F,
-        std::function<vec_t<OBS_DIM> (const vec_t<STATE_DIM>&)> h,
-        std::function<mat_t<OBS_DIM, STATE_DIM> (const vec_t<STATE_DIM>&)> H,
+        etl::delegate<vec_t<STATE_DIM> (const vec_t<STATE_DIM>&)> f,
+        etl::delegate<mat_t<STATE_DIM> (const vec_t<STATE_DIM>&)> F,
+        etl::delegate<vec_t<OBS_DIM> (const vec_t<STATE_DIM>&)> h,
+        etl::delegate<mat_t<OBS_DIM, STATE_DIM> (const vec_t<STATE_DIM>&)> H,
         const mat_t<STATE_DIM>& Q,
         const mat_t<OBS_DIM>& R,
         const vec_t<OBS_DIM>& observation
@@ -92,10 +92,10 @@ private:
 template <size_t STATE_DIM, typename scalar_type>
 template <size_t OBS_DIM>
 inline void kalman<STATE_DIM, scalar_type>::update(
-    std::function<vec_t<STATE_DIM>(const vec_t<STATE_DIM> &)> f,
-    std::function<mat_t<STATE_DIM>(const vec_t<STATE_DIM> &)> F,
-    std::function<vec_t<OBS_DIM>(const vec_t<STATE_DIM> &)> h,
-    std::function<mat_t<OBS_DIM, STATE_DIM>(const vec_t<STATE_DIM> &)> H,
+    etl::delegate<vec_t<STATE_DIM>(const vec_t<STATE_DIM> &)> f,
+    etl::delegate<mat_t<STATE_DIM>(const vec_t<STATE_DIM> &)> F,
+    etl::delegate<vec_t<OBS_DIM>(const vec_t<STATE_DIM> &)> h,
+    etl::delegate<mat_t<OBS_DIM, STATE_DIM>(const vec_t<STATE_DIM> &)> H,
     const mat_t<STATE_DIM> &Q,
     const mat_t<OBS_DIM> &R,
     const vec_t<OBS_DIM> &observation

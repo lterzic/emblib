@@ -2,7 +2,7 @@
 
 #include "emblib/emblib.hpp"
 #include "emblib/utils/chrono.hpp"
-#include <functional>
+#include <etl/delegate.h>
 
 namespace emblib::driver {
 
@@ -22,7 +22,7 @@ class i2c_bus {
 
 public:
     /* Private typedef for async operation callbacks */
-    using callback_t = std::function<void(ssize_t)>;
+    using callback_t = etl::delegate<void(ssize_t)>;
 
     explicit i2c_bus() = default;
     virtual ~i2c_bus() = default;

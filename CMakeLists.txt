@@ -19,15 +19,16 @@ target_include_directories(emblib PUBLIC
 # Useful compiler and linker options for embedded environments
 # Even though this is header only, submodules (like FreeRTOS
 # or Eigen) can benefit from these
-target_compile_options(emblib PUBLIC
+target_compile_options(emblib PRIVATE
     -fno-rtti
     -fno-exceptions
     -fdata-sections
     -ffunction-sections
 )
-target_link_options(emblib PUBLIC
+target_link_options(emblib PRIVATE
     -Wl,-Map=${CMAKE_PROJECT_NAME}.map
     -Wl,--gc-sections
+    -nostdlib++
 )
 
 # Libraries used by emblib

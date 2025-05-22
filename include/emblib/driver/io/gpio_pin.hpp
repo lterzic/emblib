@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include <functional>
+#include <etl/delegate.h>
 
 namespace emblib::driver {
 
@@ -55,7 +55,7 @@ public:
     /**
      * Set the interrupt trigger type and the callback
      */
-    virtual bool set_intr(intr_e intr, std::function<void()>) noexcept = 0;
+    virtual bool set_intr(intr_e intr, etl::delegate<void()>) noexcept = 0;
 
 };
 
