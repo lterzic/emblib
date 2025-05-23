@@ -54,8 +54,15 @@ public:
 
     /**
      * Set the interrupt trigger type and the callback
+     * @note Should return `false` if pin is not in `INPUT` mode
+     * @todo Rename intr_e to intr_trigger_e
      */
-    virtual bool set_intr(intr_e intr, etl::delegate<void()>) noexcept = 0;
+    virtual bool enable_intr(intr_e trigger, etl::delegate<void()> callback) noexcept = 0;
+
+    /**
+     * Disable interrupt triggering if currently enabled
+     */
+    virtual bool disable_intr() noexcept = 0;
 
 };
 
