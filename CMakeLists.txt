@@ -32,9 +32,10 @@ target_link_options(emblib PRIVATE
 )
 
 # Libraries used by emblib
-add_subdirectory("lib/etl")
-add_subdirectory("lib/eigen")
-add_subdirectory("lib/units")
+include("lib/addsubmodule.cmake")
+add_submodule("lib/etl")
+add_submodule("lib/eigen")
+add_submodule("lib/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
@@ -82,13 +83,13 @@ else()
     message(WARNING "emblib: Using the FreeRTOS submodule from emblib, to "
     "use a different source for FreeRTOS define a freertos_kernel target "
     "in a parent project")
-    add_subdirectory("lib/FreeRTOS-Kernel")
+    add_submodule("lib/FreeRTOS-Kernel")
 endif()
 
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
     # Add the testing library and all the tests
-    add_subdirectory("lib/Catch2")
+    add_submodule("lib/Catch2")
     add_subdirectory("test")
 
     # Flags for the build
