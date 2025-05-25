@@ -4,10 +4,6 @@
 #include "emblib/utils/chrono.hpp"
 #include <etl/delegate.h>
 
-#if EMBLIB_CHAR_DEV_SUPPORT_ETL
-#include <etl/string.h>
-#endif
-
 namespace emblib::driver {
 
 /**
@@ -47,7 +43,7 @@ public:
      * was no error and represents the number of bytes successfully
      * written before the timeout period passed.
     */
-    virtual ssize_t write(const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
+    virtual ssize_t write(const char* data, size_t size, milliseconds_t timeout) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer
@@ -66,7 +62,7 @@ public:
      * was read. A non-negative return value indicates that there
      * was no error and represents the number of bytes successfully read.
     */
-    virtual ssize_t read(char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
+    virtual ssize_t read(char* buffer, size_t size, milliseconds_t timeout) noexcept = 0;
 
     /**
      * Start an async write
@@ -117,6 +113,14 @@ public:
     }
 
     /**
+     * @return `true` if this char device supports async operations
+     */
+    virtual bool is_async_available() noexcept
+    {
+        return false;
+    }
+
+    /**
      * Tests if the device is responding
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
@@ -125,25 +129,6 @@ public:
     {
         return read(nullptr, 0, timeout) == 0;
     }
-
-    /**
-     * @return `true` if this char device supports async operations
-     */
-    virtual bool is_async_available() noexcept
-    {
-        return false;
-    }
-
-#if EMBLIB_CHAR_DEV_SUPPORT_ETL
-    /**
-     * Write overload for string objects
-     */
-    template <size_t size>
-    ssize_t write(const etl::string<size>& string) noexcept
-    {
-        return write(string.c_str(), string.size());
-    }
-#endif
 
 };
 
