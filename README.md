@@ -73,6 +73,6 @@ FreeRTOS (static) library can also be provided, be creating `freertos_kernel` ta
 ## Project structure
 Source files are split between `src` and `include` folders, where files in the `src` folder are used only within this project, but the files in the `include` folder are meant to be public, ie. included by projects that use this library.
 
-Dependencies (some of which might be optional) are located in the `lib` folder, as git submodules.
+Dependencies (some of which might be optional) are located in the `external` folder, as git submodules.
 
 Testing is done using the `Catch2` framework and all the related files are in the `test` folder.

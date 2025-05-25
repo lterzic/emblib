@@ -1,15 +1,15 @@
-[submodule "lib/FreeRTOS-Kernel"]
-	path = lib/FreeRTOS-Kernel
+[submodule "external/FreeRTOS-Kernel"]
+	path = external/FreeRTOS-Kernel
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
-[submodule "lib/etl"]
-	path = lib/etl
+[submodule "external/etl"]
+	path = external/etl
 	url = https://github.com/ETLCPP/etl.git
-[submodule "lib/Catch2"]
-	path = lib/Catch2
+[submodule "external/Catch2"]
+	path = external/Catch2
 	url = https://github.com/catchorg/Catch2
-[submodule "lib/eigen"]
-	path = lib/eigen
+[submodule "external/eigen"]
+	path = external/eigen
 	url = https://gitlab.com/libeigen/eigen.git
-[submodule "lib/units"]
-	path = lib/units
+[submodule "external/units"]
+	path = external/units
 	url = https://github.com/nholthaus/units
