@@ -19,3 +19,10 @@ INTERFACE
     EIGEN_NO_MALLOC
     EIGEN_NO_IO
 )
+
+# Provide header implementations
+# TODO: This should be PRIVATE somehow (not directly used)
+target_include_directories(emblib-math-impl
+INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
