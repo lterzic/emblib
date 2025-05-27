@@ -32,7 +32,7 @@ target_link_options(emblib PRIVATE
 )
 
 # Libraries used by emblib
-include("external/addsubmodule.cmake")
+include("cmake/addsubmodule.cmake")
 add_submodule("external/etl")
 add_submodule("external/eigen")
 add_submodule("external/units")
