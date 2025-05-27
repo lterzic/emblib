@@ -10,12 +10,19 @@ namespace emblib::driver {
  * Base class for all objects which want to provide an interface
  * for writing and reading character (byte) streams
  * @todo Rename to io_dev
+ * @todo Support read and write offsets
  */
 class char_dev {
 
 public:
     /* Typedef of callback functions for async operations */
     using callback_t = etl::delegate<void(ssize_t)>;
+    /**
+     * Blocking operation timeout in milliseconds
+     * @note Set to `-1` for maximum (infinite) timeout,
+     * behavior undefined for other negative values
+     */
+    using timeout_t = milliseconds_t;
 
     explicit char_dev() = default;
     virtual ~char_dev() = default;
@@ -43,7 +50,7 @@ public:
      * was no error and represents the number of bytes successfully
      * written before the timeout period passed.
     */
-    virtual ssize_t write(const char* data, size_t size, milliseconds_t timeout) noexcept = 0;
+    virtual ssize_t write(const char* data, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer
@@ -62,7 +69,7 @@ public:
      * was read. A non-negative return value indicates that there
      * was no error and represents the number of bytes successfully read.
     */
-    virtual ssize_t read(char* buffer, size_t size, milliseconds_t timeout) noexcept = 0;
+    virtual ssize_t read(char* buffer, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Start an async write
@@ -125,7 +132,7 @@ public:
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
     */
-    virtual bool probe(milliseconds_t timeout) noexcept
+    virtual bool probe(timeout_t timeout) noexcept
     {
         return read(nullptr, 0, timeout) == 0;
     }

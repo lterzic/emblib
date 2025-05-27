@@ -1,8 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/utils/chrono.hpp"
-#include <etl/delegate.h>
+#include "char_dev.hpp"
 
 namespace emblib::driver {
 
@@ -21,8 +20,9 @@ typedef uint16_t i2c_address_t;
 class i2c_bus {
 
 public:
-    /* Private typedef for async operation callbacks */
-    using callback_t = etl::delegate<void(ssize_t)>;
+    // Using char_dev types to make APIs compatible
+    using callback_t = char_dev::callback_t;
+    using timeout_t = char_dev::timeout_t;
 
     explicit i2c_bus() = default;
     virtual ~i2c_bus() = default;
@@ -37,46 +37,59 @@ public:
 
     /**
      * Write an array of bytes to the device with the specified address
-     * @returns `-1` if error, else number of bytes written
-     * @note Exits once the write operation is complete
+     * @note See char_dev::write
     */
-    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
+    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer from the device with the specified address
-     * @returns `-1` if error, else number of bytes read
-     * @note Exits once the read operation is complete
+     * @note See char_dev::read
     */
-    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept = 0;
+    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Start an async write
-     * @return `true` if write operation started successfully
+     * @note See char_dev::write_async
      */
-    virtual bool write_async(i2c_address_t address, const char* data, size_t size, const callback_t cb = callback_t()) noexcept = 0;
+    virtual bool write_async(i2c_address_t address, const char* data, size_t size, const callback_t cb = callback_t()) noexcept
+    {
+        return false;
+    }
 
     /**
      * Start an async read
-     * @return `true` if write operation started successfully
+     * @note See char_dev::read_async
      */
-    virtual bool read_async(i2c_address_t address, char* buffer, size_t size, const callback_t cb = callback_t()) noexcept = 0;
+    virtual bool read_async(i2c_address_t address, char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
+    {
+        return false;
+    }
+
+    /**
+     * Abort the current async operation (write/read)
+     * @note See char_dev::abort_async
+     */
+    virtual void abort_async() noexcept
+    {
+        reset();
+    }
+
+    /**
+     * @note See char_dev::is_async_available
+     */
+    virtual bool is_async_available() noexcept
+    {
+        return false;
+    }
 
     /**
      * Tests if the device is responding
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
     */
-    virtual bool probe(i2c_address_t address, milliseconds_t timeout) noexcept
+    virtual bool probe(i2c_address_t address, timeout_t timeout) noexcept
     {
         return read(address, nullptr, 0, timeout) == 0;
-    }
-
-    /**
-     * @return `true` if current serial device supports async operations
-     */
-    virtual bool is_async_available() noexcept
-    {
-        return false;
     }
 
     /**

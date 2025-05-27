@@ -1,8 +1,8 @@
 #pragma once
 
+#include "emblib/emblib.hpp"
 #include "char_dev.hpp"
 #include "i2c_bus.hpp"
-#include "emblib/emblib.hpp"
 
 namespace emblib::driver {
 
@@ -19,7 +19,7 @@ public:
      * Write an array of bytes to this device
      * @note Refer to `char_dev::write`
     */
-    ssize_t write(const char* data, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
+    ssize_t write(const char* data, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
     {
         return m_i2c_bus.write(m_address, data, size, timeout);
     }
@@ -28,7 +28,7 @@ public:
      * Read up to `size` bytes into the buffer
      * @note Refer to `char_dev::read`
     */
-    ssize_t read(char* buffer, size_t size, milliseconds_t timeout = MILLISECONDS_MAX) noexcept override
+    ssize_t read(char* buffer, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
     {
         return m_i2c_bus.read(m_address, buffer, size, timeout);
     }
