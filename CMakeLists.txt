@@ -34,22 +34,19 @@ target_link_options(emblib PRIVATE
 # Libraries used by emblib
 include("external/addsubmodule.cmake")
 add_submodule("external/etl")
-add_submodule("external/eigen")
 add_submodule("external/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
-    EIGEN_NO_MALLOC
-    EIGEN_NO_IO
     UNIT_LIB_DISABLE_IOSTREAM
     DISABLE_PREDEFINED_UNITS
 )
 
 # Link all sublibraries
 target_link_libraries(emblib PUBLIC
+    emblib-math-impl
     freertos_kernel
     etl::etl
-    eigen
     units
 )
 
@@ -65,6 +62,8 @@ if (PROJECT_IS_TOP_LEVEL)
         projCOVERAGE_TEST=0
         projENABLE_TRACING=0
     )
+    # Use Eigen as the default math library
+    add_subdirectory(impl/math/eigen)
 else()
     if (TARGET emblib_config)
         target_link_libraries(emblib PUBLIC emblib_config)

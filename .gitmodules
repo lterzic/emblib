@@ -8,7 +8,7 @@
 	path = external/Catch2
 	url = https://github.com/catchorg/Catch2
 [submodule "external/eigen"]
-	path = external/eigen
+	path = impl/math/eigen/external/eigen
 	url = https://gitlab.com/libeigen/eigen.git
 [submodule "external/units"]
 	path = external/units
