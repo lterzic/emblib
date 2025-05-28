@@ -44,7 +44,6 @@ target_compile_definitions(emblib PUBLIC
 
 # Link all sublibraries
 target_link_libraries(emblib PUBLIC
-    emblib-math-impl
     freertos_kernel
     etl::etl
     units
