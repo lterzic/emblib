@@ -34,22 +34,17 @@ target_link_options(emblib PRIVATE
 # Libraries used by emblib
 include("cmake/addsubmodule.cmake")
 add_submodule("external/etl")
-add_submodule("external/eigen")
 add_submodule("external/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
-    EIGEN_NO_MALLOC
-    EIGEN_NO_IO
     UNIT_LIB_DISABLE_IOSTREAM
     DISABLE_PREDEFINED_UNITS
 )
 
 # Link all sublibraries
 target_link_libraries(emblib PUBLIC
-    freertos_kernel
     etl::etl
-    eigen
     units
 )
 
@@ -65,6 +60,10 @@ if (PROJECT_IS_TOP_LEVEL)
         projCOVERAGE_TEST=0
         projENABLE_TRACING=0
     )
+    # Use Eigen as the default math library
+    add_subdirectory(impl/math/eigen)
+    # Use FreeRTOS as the default rtos implementation
+    add_subdirectory(impl/rtos/freertos)
 else()
     if (TARGET emblib_config)
         target_link_libraries(emblib PUBLIC emblib_config)
@@ -74,16 +73,6 @@ else()
         "add_library(emblib_config INTERFACE)"
         "target_include_directories(emblib_config INTERFACE <path>)")
     endif()
-endif()
-
-# If there is FreeRTOS in a parent project, use that, else use submodule
-if (TARGET freertos_kernel)
-    message(STATUS "emblib: FreeRTOS inherited from a parent project")
-else()
-    message(WARNING "emblib: Using the FreeRTOS submodule from emblib, to "
-    "use a different source for FreeRTOS define a freertos_kernel target "
-    "in a parent project")
-    add_submodule("external/FreeRTOS-Kernel")
 endif()
 
 # Testing environment only if top level project
