@@ -9,10 +9,9 @@ namespace emblib::driver {
 /**
  * Base class for all objects which want to provide an interface
  * for writing and reading character (byte) streams
- * @todo Rename to io_dev
  * @todo Support read and write offsets
  */
-class char_dev {
+class io_dev {
 
 public:
     /* Typedef of callback functions for async operations */
@@ -24,16 +23,16 @@ public:
      */
     using timeout_t = milliseconds_t;
 
-    explicit char_dev() = default;
-    virtual ~char_dev() = default;
+    explicit io_dev() = default;
+    virtual ~io_dev() = default;
 
     /* Copy operations not allowed */
-    char_dev(const char_dev&) = delete;
-    char_dev& operator=(const char_dev&) = delete;
+    io_dev(const io_dev&) = delete;
+    io_dev& operator=(const io_dev&) = delete;
 
     /* Move operations not allowed */
-    char_dev(char_dev&&) = delete;
-    char_dev& operator=(char_dev&&) = delete;
+    io_dev(io_dev&&) = delete;
+    io_dev& operator=(io_dev&&) = delete;
 
     /**
      * Write an array of bytes to the device

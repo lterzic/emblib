@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "char_dev.hpp"
+#include "io_dev.hpp"
 
 namespace emblib::driver {
 
@@ -12,7 +12,7 @@ struct uart_config_s {
     uart::parity_bit_e parity;
 };
 
-class uart : public char_dev {
+class uart : public io_dev {
 
 public:
     enum class baud_rate_e : uint32_t {

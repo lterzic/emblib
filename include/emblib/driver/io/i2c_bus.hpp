@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "char_dev.hpp"
+#include "io_dev.hpp"
 
 namespace emblib::driver {
 
@@ -20,9 +20,9 @@ typedef uint16_t i2c_address_t;
 class i2c_bus {
 
 public:
-    // Using char_dev types to make APIs compatible
-    using callback_t = char_dev::callback_t;
-    using timeout_t = char_dev::timeout_t;
+    // Using io_dev types to make APIs compatible
+    using callback_t = io_dev::callback_t;
+    using timeout_t = io_dev::timeout_t;
 
     explicit i2c_bus() = default;
     virtual ~i2c_bus() = default;
@@ -37,19 +37,19 @@ public:
 
     /**
      * Write an array of bytes to the device with the specified address
-     * @note See char_dev::write
+     * @note See io_dev::write
     */
     virtual ssize_t write(i2c_address_t address, const char* data, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer from the device with the specified address
-     * @note See char_dev::read
+     * @note See io_dev::read
     */
     virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, timeout_t timeout) noexcept = 0;
 
     /**
      * Start an async write
-     * @note See char_dev::write_async
+     * @note See io_dev::write_async
      */
     virtual bool write_async(i2c_address_t address, const char* data, size_t size, const callback_t cb = callback_t()) noexcept
     {
@@ -58,7 +58,7 @@ public:
 
     /**
      * Start an async read
-     * @note See char_dev::read_async
+     * @note See io_dev::read_async
      */
     virtual bool read_async(i2c_address_t address, char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
     {
@@ -67,7 +67,7 @@ public:
 
     /**
      * Abort the current async operation (write/read)
-     * @note See char_dev::abort_async
+     * @note See io_dev::abort_async
      */
     virtual void abort_async() noexcept
     {
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @note See char_dev::is_async_available
+     * @note See io_dev::is_async_available
      */
     virtual bool is_async_available() noexcept
     {

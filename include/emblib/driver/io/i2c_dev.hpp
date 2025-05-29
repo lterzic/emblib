@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "char_dev.hpp"
+#include "io_dev.hpp"
 #include "i2c_bus.hpp"
 
 namespace emblib::driver {
@@ -9,7 +9,7 @@ namespace emblib::driver {
 /**
  * I2C device
  */
-class i2c_dev final : public char_dev {
+class i2c_dev final : public io_dev {
 
 public:
     explicit i2c_dev(i2c_bus& i2c_bus, i2c_address_t address)
@@ -17,7 +17,7 @@ public:
 
     /**
      * Write an array of bytes to this device
-     * @note Refer to `char_dev::write`
+     * @note Refer to `io_dev::write`
     */
     ssize_t write(const char* data, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
     {
@@ -26,7 +26,7 @@ public:
 
     /**
      * Read up to `size` bytes into the buffer
-     * @note Refer to `char_dev::read`
+     * @note Refer to `io_dev::read`
     */
     ssize_t read(char* buffer, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
     {

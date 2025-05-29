@@ -1,6 +1,6 @@
 #pragma once
 
-#include "emblib/driver/io/char_dev.hpp"
+#include "emblib/driver/io/io_dev.hpp"
 #include "emblib/rtos/mutex.hpp"
 
 #include <etl/string.h>
@@ -22,7 +22,7 @@ public:
     /** @todo Move to protected */
     using buffer_t = etl::string<BUFFER_SIZE>;
 
-    explicit logger(char_dev* log_device) :
+    explicit logger(io_dev* log_device) :
         m_log_device(log_device)
     {
         m_format.precision(3);
@@ -52,7 +52,7 @@ public:
         m_output_level = level;
     }
 
-    void set_output_device(char_dev& device) noexcept
+    void set_output_device(io_dev& device) noexcept
     {
         m_log_device = &device;
     }
@@ -80,14 +80,14 @@ private:
         etl::to_string(number, m_buffer, m_format, true);
     }
 
-    virtual void flush(log_level_e level, const buffer_t& buffer, char_dev& log_device) noexcept
+    virtual void flush(log_level_e level, const buffer_t& buffer, io_dev& log_device) noexcept
     {
         log_device.write(buffer.c_str(), buffer.size());
     }
 
 private:
     log_level_e m_output_level = log_level_e::INFO;
-    char_dev* m_log_device;
+    io_dev* m_log_device;
     buffer_t m_buffer;
     mutex m_mutex;
     etl::format_spec m_format;
