@@ -78,7 +78,6 @@ private:
 
 }
 
-// Include task implementation based on emblib config
 #include "details/task_impl.hpp"
 
 #if EMBLIB_UNNEST_NAMESPACES

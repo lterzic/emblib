@@ -58,7 +58,6 @@ private:
 
 }
 
-// Include mutex implementation based on emblib config
 #include "details/mutex_impl.hpp"
 
 #if EMBLIB_UNNEST_NAMESPACES
