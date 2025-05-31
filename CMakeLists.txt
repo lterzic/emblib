@@ -48,22 +48,11 @@ target_link_libraries(emblib PUBLIC
     units
 )
 
-# If this is the top level project then use default configurations
-# else import them from the parent projects
+# If this is the top level project then use the default
+# configuration else expect it to exist
 if (PROJECT_IS_TOP_LEVEL)
     # Use the default emblib config
     target_include_directories(emblib PUBLIC ${PROJECT_SOURCE_DIR}/src)
-    # Use the default FreeRTOS configuration
-    add_library(freertos_config INTERFACE)
-    target_include_directories(freertos_config SYSTEM INTERFACE ${PROJECT_SOURCE_DIR}/src)
-    target_compile_definitions(freertos_config INTERFACE
-        projCOVERAGE_TEST=0
-        projENABLE_TRACING=0
-    )
-    # Use Eigen as the default math library
-    add_subdirectory(impl/math/eigen)
-    # Use FreeRTOS as the default rtos implementation
-    add_subdirectory(impl/rtos/freertos)
 else()
     if (TARGET emblib_config)
         target_link_libraries(emblib PUBLIC emblib_config)
@@ -77,6 +66,21 @@ endif()
 
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
+    # Use the default FreeRTOS configuration
+    add_library(freertos_config INTERFACE)
+    target_include_directories(freertos_config
+    SYSTEM INTERFACE
+        ${PROJECT_SOURCE_DIR}/test/rtos/freertos
+    )
+    target_compile_definitions(freertos_config
+    INTERFACE
+        projCOVERAGE_TEST=0
+        projENABLE_TRACING=0
+    )
+    add_subdirectory(impl/rtos/freertos)
+    # Use Eigen as the default math library
+    add_subdirectory(impl/math/eigen)
+
     # Add the testing library and all the tests
     add_submodule("external/Catch2")
     add_subdirectory("test")
