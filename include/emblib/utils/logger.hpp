@@ -82,7 +82,7 @@ private:
 
     virtual void flush(log_level_e level, const buffer_t& buffer, io_dev& log_device) noexcept
     {
-        log_device.write(buffer.c_str(), buffer.size());
+        log_device.write(buffer.c_str(), buffer.size(), io_dev::timeout_t(0));
     }
 
 private:
