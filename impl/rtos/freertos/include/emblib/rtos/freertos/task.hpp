@@ -42,7 +42,10 @@ using task_stack_t = StackType_t[SIZE_WORDS];
 /**
  * Tick as the time unit defined with respect to the FreeRTOS config parameter
  */
-using ticks_t = units::unit_t<units::unit<std::ratio<1, configTICK_RATE_HZ>, second_t>, unsigned int>;
+using ticks_t = ::units::unit_t<
+    ::units::unit<std::ratio<1, configTICK_RATE_HZ>, units::details::seconds_unit>,
+    unsigned int
+>;
 
 /**
  * FreeRTOS Task

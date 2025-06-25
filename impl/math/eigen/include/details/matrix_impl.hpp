@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/math/matrix.hpp"
-#include "emblib/utils/units.hpp"
+#include <units.h>
 
 namespace Eigen {
 

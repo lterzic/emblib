@@ -1,14 +1,13 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/utils/units.hpp"
+#include "emblib/units/si.hpp"
 
 namespace emblib::driver {
 
-class servo {
+using namespace emblib::units;
 
-public:
-    using degrees_t = units::unit_t<degree_t, float>;
+class servo {
 
 public:
     explicit servo() = default;
@@ -18,22 +17,22 @@ public:
      * Set the desired position (angle) for the servo
      * @note Should be between min and max angles
      */
-    virtual bool write_angle(degrees_t angle) noexcept = 0;
+    virtual bool write_angle(radians<float> angle) noexcept = 0;
 
     /**
      * Read the current servo position (angle)
      */
-    virtual bool read_angle(degrees_t& angle) noexcept = 0;
+    virtual bool read_angle(radians<float>& angle) noexcept = 0;
 
     /**
      * Get the minimum angle
      */
-    virtual degrees_t get_min_angle() const noexcept = 0;
+    virtual radians<float> get_min_angle() const noexcept = 0;
 
     /**
      * Get the maximum angle
      */
-    virtual degrees_t get_max_angle() const noexcept = 0;
+    virtual radians<float> get_max_angle() const noexcept = 0;
 };
 
 }

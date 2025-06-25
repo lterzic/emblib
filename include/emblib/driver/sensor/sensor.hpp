@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/utils/units.hpp"
+#include "emblib/units/si.hpp"
 
 namespace emblib::driver {
 
@@ -12,7 +12,7 @@ public:
     /**
      * Type definition for unit of number of events (samples) per second
      */
-    using rate_t = units::unit_t<units::inverse<second_t>, size_t>;
+    using rate_t = units::hertz<size_t>;
 
 public:
     /**
