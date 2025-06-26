@@ -6,7 +6,9 @@
 
 namespace emblib::rtos {
 
-// Statically allocated stack
+/**
+ * Buffer for static stack allocation
+ */
 template <size_t SIZE_BYTES>
 using task_stack_t = uint8_t[SIZE_BYTES];
 
@@ -31,7 +33,12 @@ public:
     /**
      * Start the scheduler
      */
-    static inline void start_tasks() noexcept;
+    static inline void start_scheduler() noexcept;
+
+    /**
+     * Is the CPU currently managed by a scheduler
+     */
+    static inline bool is_scheduler_running() noexcept;
 
     /**
      * Put the currently running thread to sleep

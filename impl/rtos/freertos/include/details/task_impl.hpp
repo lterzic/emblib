@@ -10,9 +10,14 @@ inline task::task(const char* name, size_t priority, task_stack_t<STACK_SIZE_BYT
     details::task_native_t(name, priority, (freertos::task_stack_t<sizeof(stack) / sizeof(freertos::task_stack_t<1>)>&)stack)
 {}
 
-inline void task::start_tasks()
+inline void task::start_scheduler()
 {
     freertos::start_scheduler();
+}
+
+inline bool task::is_scheduler_running()
+{
+    return freertos::get_scheduler_state() == freertos::scheduler_state_e::RUNNING;
 }
 
 inline void task::sleep(milliseconds_t duration)
