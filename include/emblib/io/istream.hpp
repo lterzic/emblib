@@ -1,28 +1,15 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/units/si.hpp"
-#include <etl/delegate.h>
+#include "iodef.hpp"
 
-namespace emblib::driver {
+namespace emblib::io {
 
 /**
  * Generic input device interface
  */
 template <typename data_type = char>
 class istream {
-
-public:
-    /**
-     * Async read result callback
-     */
-    using callback_t = etl::delegate<void(ssize_t)>;
-
-    /**
-     * Blocking operation timeout in milliseconds
-     * @note Set to `-1` for maximum (infinite) timeout
-     */
-    using timeout_t = units::milliseconds<size_t>;
 
 public:
     /**
@@ -63,14 +50,15 @@ public:
      */
     virtual bool read_async(data_type* buffer, size_t size, callback_t cb) noexcept
     {
-        return cb(read(buffer, size, timeout_t(0)));
+        cb(read(buffer, size, timeout_t(0)));
+        return true;
     }
 
     /**
      * Abort currently active read operation
      * 
      * @note Default implementation is doing nothing since the default
-     * implementation of the `read_async` is the synchronouse `rea`
+     * implementation of the `read_async` is the synchronouse `read`
      */
     virtual bool abort_async_read() noexcept
     {

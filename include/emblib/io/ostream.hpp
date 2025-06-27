@@ -1,28 +1,15 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/units/si.hpp"
-#include <etl/delegate.h>
+#include "iodef.hpp"
 
-namespace emblib::driver {
+namespace emblib::io {
 
 /**
  * Generic output device interface
  */
 template <typename data_type = char>
 class ostream {
-
-public:
-    /**
-     * Async write result callback
-     */
-    using callback_t = etl::delegate<void(ssize_t)>;
-
-    /**
-     * Blocking operation timeout in milliseconds
-     * @note Set to `-1` for maximum (infinite) timeout
-     */
-    using timeout_t = units::milliseconds<size_t>;
 
 public:
     /**
@@ -61,7 +48,8 @@ public:
      */
     virtual bool write_async(const char* data, size_t size, callback_t cb) noexcept
     {
-        return cb(write(data, size, timeout_t(0)));
+        cb(write(data, size, timeout_t(0)));
+        return true;
     }
 
     /**
