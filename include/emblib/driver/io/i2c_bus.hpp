@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "io_dev.hpp"
+#include "emblib/io/iodef.hpp"
 
 namespace emblib::driver {
 
@@ -20,10 +20,6 @@ typedef uint16_t i2c_address_t;
 class i2c_bus {
 
 public:
-    // Using io_dev types to make APIs compatible
-    using callback_t = io_dev::callback_t;
-    using timeout_t = io_dev::timeout_t;
-
     explicit i2c_bus() = default;
     virtual ~i2c_bus() = default;
 
@@ -37,37 +33,34 @@ public:
 
     /**
      * Write an array of bytes to the device with the specified address
-     * @note See io_dev::write
     */
-    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, timeout_t timeout) noexcept = 0;
+    virtual ssize_t write(i2c_address_t address, const char* data, size_t size, io::timeout_t timeout) noexcept = 0;
 
     /**
      * Read up to `size` bytes into the buffer from the device with the specified address
-     * @note See io_dev::read
     */
-    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, timeout_t timeout) noexcept = 0;
+    virtual ssize_t read(i2c_address_t address, char* buffer, size_t size, io::timeout_t timeout) noexcept = 0;
 
     /**
      * Start an async write
-     * @note See io_dev::write_async
      */
-    virtual bool write_async(i2c_address_t address, const char* data, size_t size, const callback_t cb = callback_t()) noexcept
+    virtual bool write_async(i2c_address_t address, const char* data, size_t size, io::callback_t cb) noexcept
     {
-        return false;
+        cb(write(address, data, size, io::timeout_t(0)));
+        return true;
     }
 
     /**
      * Start an async read
-     * @note See io_dev::read_async
      */
-    virtual bool read_async(i2c_address_t address, char* buffer, size_t size, const callback_t cb = callback_t()) noexcept
+    virtual bool read_async(i2c_address_t address, char* buffer, size_t size, io::callback_t cb) noexcept
     {
-        return false;
+        cb(read(address, buffer, size, io::timeout_t(0)));
+        return true;
     }
 
     /**
      * Abort the current async operation (write/read)
-     * @note See io_dev::abort_async
      */
     virtual void abort_async() noexcept
     {
@@ -75,19 +68,11 @@ public:
     }
 
     /**
-     * @note See io_dev::is_async_available
-     */
-    virtual bool is_async_available() noexcept
-    {
-        return false;
-    }
-
-    /**
      * Tests if the device is responding
      * @returns `true` if device responds
      * @note Default implementation is a dummy read
     */
-    virtual bool probe(i2c_address_t address, timeout_t timeout) noexcept
+    virtual bool ping(i2c_address_t address, io::timeout_t timeout) noexcept
     {
         return read(address, nullptr, 0, timeout) == 0;
     }
