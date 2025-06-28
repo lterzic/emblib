@@ -44,11 +44,11 @@ public:
      * written.
      * 
      * @note Default implementation is a synchronous `write` with timeout
-     * set to 0
+     * set to -1 (maximum)
      */
     virtual bool write_async(const char* data, size_t size, callback_t cb) noexcept
     {
-        cb(write(data, size, timeout_t(0)));
+        cb(write(data, size, timeout_t(-1)));
         return true;
     }
 

@@ -46,11 +46,11 @@ public:
      * read.
      * 
      * @note Default implementation is a synchronous `read` with timeout
-     * set to 0
+     * set to -1 (maximum)
      */
     virtual bool read_async(data_type* buffer, size_t size, callback_t cb) noexcept
     {
-        cb(read(buffer, size, timeout_t(0)));
+        cb(read(buffer, size, timeout_t(-1)));
         return true;
     }
 
