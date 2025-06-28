@@ -2,7 +2,7 @@
 
 #include "emblib/emblib.hpp"
 #include "sensor3d.hpp"
-#include "emblib/units/si.hpp"
+#include "emblib/units/rotation.hpp"
 
 namespace emblib::driver {
 

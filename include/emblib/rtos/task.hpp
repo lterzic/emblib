@@ -1,10 +1,12 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/utils/chrono.hpp"
+#include "emblib/units/time.hpp"
 #include "details/task_native.hpp"
 
 namespace emblib::rtos {
+
+using namespace emblib::units;
 
 /**
  * Buffer for static stack allocation
@@ -44,7 +46,7 @@ public:
      * Put the currently running thread to sleep
      * @note Static since can be called even baremetal and implemented using HAL
      */
-    static inline void sleep(milliseconds_t duration) noexcept;
+    static inline void sleep(milliseconds<size_t> duration) noexcept;
 
     /**
      * Increment this task's notification value
@@ -64,7 +66,7 @@ protected:
      * @note First time this is called, next wake up time is relative to task creation
      * @todo Can change return type to bool to signal if woke up on time
      */
-    void sleep_periodic(milliseconds_t period) noexcept;
+    void sleep_periodic(milliseconds<size_t> period) noexcept;
 
     /**
      * Wait for this task to get notified
@@ -73,7 +75,7 @@ protected:
      * @returns True if the notification was received before
      * the timeout passed, else false
      */
-    bool wait_notification(milliseconds_t timeout) noexcept;
+    bool wait_notification(milliseconds<size_t> timeout) noexcept;
 
 private:
     /**

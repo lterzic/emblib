@@ -1,7 +1,7 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "emblib/units/si.hpp"
+#include "emblib/units/angle.hpp"
 
 namespace emblib::driver {
 

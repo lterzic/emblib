@@ -1,9 +1,12 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
+#include "emblib/units/time.hpp"
 #include "details/mutex_native.hpp"
 
 namespace emblib::rtos {
+
+using namespace emblib::units;
 
 /**
  * Mutex
@@ -26,7 +29,7 @@ public:
      * Try to lock the mutex within the given timeout. If successful
      * returns true, else false.
      */
-    bool lock(milliseconds_t timeout = MILLISECONDS_MAX) noexcept;
+    bool lock(milliseconds<size_t> timeout = milliseconds<size_t>(-1)) noexcept;
 
     /**
      * Try to unlock the mutex. It will only be successful if

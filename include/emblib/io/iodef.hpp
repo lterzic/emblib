@@ -1,6 +1,6 @@
 #pragma once
 
-#include "emblib/units/si.hpp"
+#include "emblib/units/time.hpp"
 #include <etl/delegate.h>
 
 namespace emblib::io {
