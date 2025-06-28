@@ -1,7 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "io_dev.hpp"
+#include "emblib/io/istream.hpp"
+#include "emblib/io/ostream.hpp"
 #include "i2c_bus.hpp"
 
 namespace emblib::driver {
@@ -9,7 +10,7 @@ namespace emblib::driver {
 /**
  * I2C device
  */
-class i2c_dev final : public io_dev {
+class i2c_dev final : public io::istream<char>, public io::ostream<char> {
 
 public:
     explicit i2c_dev(i2c_bus& i2c_bus, i2c_address_t address)
@@ -17,18 +18,16 @@ public:
 
     /**
      * Write an array of bytes to this device
-     * @note Refer to `io_dev::write`
     */
-    ssize_t write(const char* data, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
+    ssize_t write(const char* data, size_t size, io::timeout_t timeout) noexcept override
     {
         return m_i2c_bus.write(m_address, data, size, timeout);
     }
 
     /**
      * Read up to `size` bytes into the buffer
-     * @note Refer to `io_dev::read`
     */
-    ssize_t read(char* buffer, size_t size, timeout_t timeout = MILLISECONDS_MAX) noexcept override
+    ssize_t read(char* buffer, size_t size, io::timeout_t timeout) noexcept override
     {
         return m_i2c_bus.read(m_address, buffer, size, timeout);
     }
@@ -37,7 +36,7 @@ public:
      * Start an async write
      * @return `true` if write operation started successfully
      */
-    bool write_async(const char* data, size_t size, const callback_t cb = callback_t()) noexcept override
+    bool write_async(const char* data, size_t size, io::callback_t cb) noexcept override
     {
         return m_i2c_bus.write_async(m_address, data, size, cb);
     }
@@ -46,19 +45,21 @@ public:
      * Start an async read
      * @return `true` if write operation started successfully
      */
-    bool read_async(char* buffer, size_t size, const callback_t cb = callback_t()) noexcept override
+    bool read_async(char* buffer, size_t size, io::callback_t cb) noexcept override
     {
         return m_i2c_bus.read_async(m_address, buffer, size, cb);
     }
 
-    /** @todo Add probe override */
-
-    /**
-     * @return `true` if current serial device supports async operations
-     */
-    bool is_async_available() noexcept override
+    bool abort_async_write() noexcept override
     {
-        return m_i2c_bus.is_async_available();
+        m_i2c_bus.abort_async();
+        return true;
+    }
+
+    bool abort_async_read() noexcept override
+    {
+        m_i2c_bus.abort_async();
+        return true;
     }
 
 private:
