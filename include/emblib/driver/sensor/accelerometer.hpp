@@ -1,8 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "sensor3d.hpp"
 #include "emblib/units/speed.hpp"
+#include "sensornd.hpp"
 
 namespace emblib::driver {
 
@@ -14,7 +14,7 @@ using mpss_t = units::meters_per_second_squared<float>;
 /**
  * Accelerometer interface
  */
-class accelerometer : public sensor3d<mpss_t> {
+class accelerometer : public sensornd<mpss_t> {
 
 };
 

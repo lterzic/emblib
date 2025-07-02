@@ -1,8 +1,8 @@
 #pragma once
 
 #include "emblib/emblib.hpp"
-#include "sensor3d.hpp"
 #include "emblib/units/rotation.hpp"
+#include "sensornd.hpp"
 
 namespace emblib::driver {
 
@@ -14,7 +14,7 @@ using rps_t = units::radians_per_second<float>;
 /**
  * Gyroscope interface
  */
-class gyroscope : public sensor3d<rps_t> {
+class gyroscope : public sensornd<rps_t> {
 
 };
 

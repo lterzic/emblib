@@ -10,6 +10,11 @@ class sensor {
 
 public:
     /**
+     * Public data_type accessor
+     */
+    using data_t = data_type;
+
+    /**
      * Type definition for unit of number of events (samples) per second
      */
     using rate_t = units::hertz<size_t>;
@@ -20,6 +25,12 @@ public:
     */
     explicit sensor() = default;
     virtual ~sensor() = default;
+
+    /**
+     * Get the name of the sensor
+     * @todo Return type can be `const etl::istring&`
+     */
+    virtual const char* get_name() const noexcept = 0;
 
     /**
      * Check if the sensor identifies correctly
@@ -53,8 +64,8 @@ public:
     virtual bool read(data_type& out) noexcept = 0;
 
     /**
-     * Noise spectral density in units [data_type]/sqrt(Hz)
-     * @todo Create a unit type for the return type based on the data type
+     * Noise spectral density
+     * @note Return units are assumed to be [data_type]/sqrt(Hz)
      */
     virtual float get_noise_density() const noexcept = 0;
 };
