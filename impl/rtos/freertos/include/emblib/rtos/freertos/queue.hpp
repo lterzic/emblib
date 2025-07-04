@@ -31,6 +31,7 @@ public:
      */
     bool send(const item_type* item, ticks_t timeout) noexcept
     {
+        static_assert(std::is_trivially_copyable_v<item_type>);
         return xQueueSend(m_queue_handle, item, timeout.value()) == pdTRUE;
     }
 
