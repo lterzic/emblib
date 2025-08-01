@@ -8,33 +8,26 @@
 namespace emblib::rtos::freertos {
 
 /**
- * Possible FreeRTOS semaphore implementations
- */
-enum class semaphore_type_e {
-    BINARY,
-    COUNTING,
-    MUTEX
-};
-
-/**
  * FreeRTOS semaphore
  */
-template <semaphore_type_e TYPE = semaphore_type_e::BINARY>
 class semaphore {
 
 public:
-    template <semaphore_type_e type = TYPE, typename = std::enable_if_t<type != semaphore_type_e::COUNTING>>
-    explicit semaphore() noexcept :
-        m_semaphore_handle(
-            TYPE == semaphore_type_e::MUTEX ?
-            xSemaphoreCreateMutexStatic(&m_semaphore_buffer) :
-            xSemaphoreCreateBinaryStatic(&m_semaphore_buffer))
-    {}
-
-    template <semaphore_type_e type = TYPE, typename = std::enable_if_t<type == semaphore_type_e::COUNTING>>
-    explicit semaphore(size_t max_count, size_t initial_count = 0) noexcept :
-        m_semaphore_handle(xSemaphoreCreateCountingStatic(max_count, initial_count, &m_semaphore_buffer))
-    {}
+    /**
+     * Semaphore type depends on the provided max count
+     * For mutex set `max_count` to 0, for binary set to 1,
+     * and higher values will create a counting semaphore
+     */
+    explicit semaphore(size_t max_count = 1) noexcept
+    {
+        if (max_count == 0)
+            m_semaphore_handle = xSemaphoreCreateMutexStatic(&m_semaphore_buffer);
+        else if (max_count == 1)
+            m_semaphore_handle = xSemaphoreCreateBinaryStatic(&m_semaphore_buffer);
+        else
+            m_semaphore_handle = xSemaphoreCreateCountingStatic(max_count, 0, &m_semaphore_buffer);
+    }
+    virtual ~semaphore() = default;
 
     /* Copy operations not allowed */
     semaphore(const semaphore&) = delete;
@@ -80,6 +73,11 @@ private:
 
 };
 
-using mutex = semaphore<semaphore_type_e::MUTEX>;
+class mutex : public semaphore {
+public:
+    explicit mutex() :
+        semaphore(0)
+    {}
+};
 
 }
