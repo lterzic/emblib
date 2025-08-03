@@ -85,6 +85,20 @@ private:
 
 };
 
+/**
+ * Task with internal stack
+ */
+template <size_t STACK_SIZE_BYTES>
+class task_static : public task {
+public:
+    explicit task_static(const char* name, size_t priority) :
+        task(name, priority, m_stack)
+    {}
+
+private:
+    task_stack_t<STACK_SIZE_BYTES> m_stack;
+};
+
 }
 
 #include "details/task_impl.hpp"
