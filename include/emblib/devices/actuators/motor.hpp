@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 class motor {
 

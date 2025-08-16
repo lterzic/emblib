@@ -3,7 +3,7 @@
 #include "emblib/units/rotation.hpp"
 #include "sensornd.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 /**
  * Angular velocity units in radians per second

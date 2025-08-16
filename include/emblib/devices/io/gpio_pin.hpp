@@ -2,7 +2,7 @@
 
 #include <etl/delegate.h>
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 class gpio_pin {
 

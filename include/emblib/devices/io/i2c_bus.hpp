@@ -2,7 +2,7 @@
 
 #include "emblib/io/iodef.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 /**
  * @todo If needed replace this with a class i2c_address which

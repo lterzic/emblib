@@ -3,7 +3,7 @@
 #include "sensor.hpp"
 #include <etl/array.h>
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 /**
  * N-dimensional sensor

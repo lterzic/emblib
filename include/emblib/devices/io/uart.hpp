@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 struct uart_config_s {
     uart::baud_rate_e baud_rate;

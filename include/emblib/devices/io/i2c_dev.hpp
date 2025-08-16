@@ -4,7 +4,7 @@
 #include "emblib/io/ostream.hpp"
 #include "i2c_bus.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 /**
  * I2C device

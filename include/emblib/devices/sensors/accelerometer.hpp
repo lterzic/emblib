@@ -3,7 +3,7 @@
 #include "emblib/units/speed.hpp"
 #include "sensornd.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 /**
  * Acceleration units in meters per second^2

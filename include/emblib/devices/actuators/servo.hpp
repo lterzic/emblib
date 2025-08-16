@@ -2,7 +2,7 @@
 
 #include "emblib/units/angle.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 using namespace emblib::units;
 

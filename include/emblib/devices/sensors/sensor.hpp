@@ -2,7 +2,7 @@
 
 #include "emblib/units/time.hpp"
 
-namespace emblib::driver {
+namespace emblib::devices {
 
 template <typename data_type>
 class sensor {
