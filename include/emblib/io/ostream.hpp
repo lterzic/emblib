@@ -6,14 +6,14 @@
 namespace emblib::io {
 
 /**
- * Generic output device interface
+ * Output stream interface for generic data type
  */
 template <typename data_type = char>
-class ostream {
+class ostream_base {
 
 public:
     /**
-     * Write an array of bytes to the device
+     * Write an array of `size` elements to the device
      * 
      * If `timeout` is 0, the function exits as soon as it tried
      * to write any data to the device. It's possible that all of the
@@ -63,5 +63,10 @@ public:
         return true;
     }
 };
+
+/**
+ * Output stream with `char` data type
+ */
+using ostream = ostream_base<char>;
 
 }

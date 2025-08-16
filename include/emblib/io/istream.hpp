@@ -6,14 +6,14 @@
 namespace emblib::io {
 
 /**
- * Generic input device interface
+ * Input stream interface for generic data type
  */
 template <typename data_type = char>
-class istream {
+class istream_base {
 
 public:
     /**
-     * Read up to `size` bytes into the buffer
+     * Read up to `size` elements into the buffer
      * 
      * If `timeout` is 0, the function exits as soon as it tried
      * to read any data from the device. If no data was available, the
@@ -65,5 +65,10 @@ public:
         return true;
     }
 };
+
+/**
+ * Input stream with `char` data type
+ */
+using istream = istream_base<char>;
 
 }
