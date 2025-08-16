@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/units/time.hpp"
 #include "details/semaphore_native.hpp"
 
@@ -49,9 +48,3 @@ public:
 }
 
 #include "details/semaphore_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace rtos;
-}
-#endif

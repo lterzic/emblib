@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/units/time.hpp"
 #include "details/task_native.hpp"
 
@@ -102,9 +101,3 @@ private:
 }
 
 #include "details/task_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace rtos;
-}
-#endif

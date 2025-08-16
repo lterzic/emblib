@@ -33,8 +33,8 @@ target_link_options(emblib PRIVATE
 
 # Libraries used by emblib
 include("cmake/addsubmodule.cmake")
-add_submodule("external/etl")
-add_submodule("external/units")
+add_submodule("lib/etl")
+add_submodule("lib/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
@@ -47,22 +47,6 @@ target_link_libraries(emblib PUBLIC
     etl::etl
     units
 )
-
-# If this is the top level project then use the default
-# configuration else expect it to exist
-if (PROJECT_IS_TOP_LEVEL)
-    # Use the default emblib config
-    target_include_directories(emblib PUBLIC ${PROJECT_SOURCE_DIR}/src)
-else()
-    if (TARGET emblib_config)
-        target_link_libraries(emblib PUBLIC emblib_config)
-    else()
-        message(FATAL_ERROR "emblib: Config not found, create an interface library"
-        "and add include directory which holds the emblib config file:"
-        "add_library(emblib_config INTERFACE)"
-        "target_include_directories(emblib_config INTERFACE <path>)")
-    endif()
-endif()
 
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
@@ -77,22 +61,18 @@ if (PROJECT_IS_TOP_LEVEL)
         projCOVERAGE_TEST=0
         projENABLE_TRACING=0
     )
-    add_subdirectory(impl/rtos/freertos)
+    add_subdirectory(drivers/rtos/freertos)
     # Use Eigen as the default math library
-    add_subdirectory(impl/math/eigen)
+    add_subdirectory(drivers/math/eigen)
 
     # Add the testing library and all the tests
-    add_submodule("external/Catch2")
+    add_submodule("lib/Catch2")
     add_subdirectory("test")
 
     # Flags for the build
     target_compile_options(emblib PUBLIC -Wall -Wextra -Wpedantic)
     set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-
-    # Executable for running custom testing and debugging
-    add_executable(emblib_test src/test.cpp)
-    target_link_libraries(emblib_test PRIVATE emblib)
 endif()
 
 # TODO: Add a custom command for testing (cmake test)

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include <etl/array.h>
 #include <etl/vector.h>
 
@@ -55,9 +54,3 @@ private:
 };
 
 }
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace dsp;
-}
-#endif

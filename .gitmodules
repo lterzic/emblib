@@ -1,15 +1,15 @@
 [submodule "external/FreeRTOS-Kernel"]
-	path = impl/rtos/freertos/external/FreeRTOS-Kernel
+	path = drivers/rtos/freertos/lib/FreeRTOS-Kernel
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
 [submodule "external/etl"]
-	path = external/etl
+	path = lib/etl
 	url = https://github.com/ETLCPP/etl.git
 [submodule "external/Catch2"]
-	path = external/Catch2
+	path = lib/Catch2
 	url = https://github.com/catchorg/Catch2
 [submodule "external/eigen"]
-	path = impl/math/eigen/external/eigen
+	path = drivers/math/eigen/lib/eigen
 	url = https://gitlab.com/libeigen/eigen.git
 [submodule "external/units"]
-	path = external/units
+	path = lib/units
 	url = https://github.com/nholthaus/units

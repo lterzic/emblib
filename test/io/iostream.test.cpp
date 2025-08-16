@@ -7,13 +7,13 @@ class iostream_buffer : public emblib::io::iostream {
 public:
     ssize_t read(char* buffer, size_t size, emblib::io::timeout_t timeout) noexcept override
     {
-        UNUSED(timeout);
+        (void)timeout;
         return m_data.copy(buffer, size);
     }
 
     ssize_t write(const char* data, size_t size, emblib::io::timeout_t timeout) noexcept override
     {
-        UNUSED(timeout);
+        (void)timeout;
         m_data.append(data, size);
         return size;
     }

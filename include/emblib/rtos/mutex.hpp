@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/units/time.hpp"
 #include "details/mutex_native.hpp"
 
@@ -62,9 +61,3 @@ private:
 }
 
 #include "details/mutex_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace rtos;
-}
-#endif

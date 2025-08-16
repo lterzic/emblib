@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "details/matrix_native.hpp"
 
 namespace emblib::math {
@@ -357,9 +356,3 @@ using matrixf = matrix<float, ROWS, COLS>;
 }
 
 #include "details/matrix_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace math;
-}
-#endif

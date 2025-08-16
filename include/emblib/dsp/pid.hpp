@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 
 namespace emblib::dsp {
 
@@ -81,9 +80,3 @@ private:
 };
 
 }
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace dsp;
-}
-#endif

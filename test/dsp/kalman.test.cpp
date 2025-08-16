@@ -22,7 +22,7 @@ TEST_CASE("Kalman linear update", "[dsp][kalman]")
         return F.matmul(state) + u;
     };
     auto Fj = [&F](const vectorf<3>& state) {
-        UNUSED(state);
+        (void)state;
         return F;
     };
     kalman3.predict(f, Fj, Q);
@@ -31,7 +31,7 @@ TEST_CASE("Kalman linear update", "[dsp][kalman]")
         return H.matmul(state);
     };
     auto Hj = [&H](const vectorf<3>& state) {
-        UNUSED(state);
+        (void)state;
         return H;
     };
     kalman3.update<4>(h, Hj, R, z);
