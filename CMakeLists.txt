@@ -33,8 +33,8 @@ target_link_options(emblib PRIVATE
 
 # Libraries used by emblib
 include("cmake/addsubmodule.cmake")
-add_submodule("external/etl")
-add_submodule("external/units")
+add_submodule("lib/etl")
+add_submodule("lib/units")
 
 # Libary options
 target_compile_definitions(emblib PUBLIC
@@ -61,12 +61,12 @@ if (PROJECT_IS_TOP_LEVEL)
         projCOVERAGE_TEST=0
         projENABLE_TRACING=0
     )
-    add_subdirectory(impl/rtos/freertos)
+    add_subdirectory(drivers/rtos/freertos)
     # Use Eigen as the default math library
-    add_subdirectory(impl/math/eigen)
+    add_subdirectory(drivers/math/eigen)
 
     # Add the testing library and all the tests
-    add_submodule("external/Catch2")
+    add_submodule("lib/Catch2")
     add_subdirectory("test")
 
     # Flags for the build

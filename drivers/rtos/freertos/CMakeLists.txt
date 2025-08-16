@@ -5,7 +5,7 @@ else()
     message(STATUS "emblib: Using the FreeRTOS submodule from emblib, to "
     "use a different source for FreeRTOS define a freertos_kernel target "
     "in a parent project")
-    add_submodule("external/FreeRTOS-Kernel")
+    add_submodule("lib/FreeRTOS-Kernel")
 endif()
 
 # Link the FreeRTOS library
