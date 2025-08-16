@@ -72,9 +72,3 @@ quaternion<scalar_type> operator*(const scalar_type& lhs, const quaternion<scala
 using quaternionf = quaternion<float>;
 
 }
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace math;
-}
-#endif

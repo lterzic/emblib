@@ -103,9 +103,3 @@ private:
 };
 
 }
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace dsp;
-}
-#endif

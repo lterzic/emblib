@@ -356,9 +356,3 @@ using matrixf = matrix<float, ROWS, COLS>;
 }
 
 #include "details/matrix_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace math;
-}
-#endif

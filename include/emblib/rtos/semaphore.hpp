@@ -48,9 +48,3 @@ public:
 }
 
 #include "details/semaphore_impl.hpp"
-
-#if EMBLIB_UNNEST_NAMESPACES
-namespace emblib {
-    using namespace rtos;
-}
-#endif
