@@ -89,10 +89,6 @@ if (PROJECT_IS_TOP_LEVEL)
     target_compile_options(emblib PUBLIC -Wall -Wextra -Wpedantic)
     set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-
-    # Executable for running custom testing and debugging
-    add_executable(emblib_test src/test.cpp)
-    target_link_libraries(emblib_test PRIVATE emblib)
 endif()
 
 # TODO: Add a custom command for testing (cmake test)
