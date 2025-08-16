@@ -1,20 +1,14 @@
 #pragma once
 
+#include "sensor.hpp"
 #include "emblib/units/speed.hpp"
-#include "sensornd.hpp"
 
 namespace emblib::devices {
 
 /**
- * Acceleration units in meters per second^2
+ * Accelerometer sensor type
+ * Data type is array of 3 m/s^2 values
  */
-using mpss_t = units::meters_per_second_squared<float>;
-
-/**
- * Accelerometer interface
- */
-class accelerometer : public sensornd<mpss_t> {
-
-};
+using accelerometer = sensor<units::meters_per_second_squared<float>[3]>;
 
 }

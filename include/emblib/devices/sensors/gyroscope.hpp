@@ -1,20 +1,14 @@
 #pragma once
 
+#include "sensor.hpp"
 #include "emblib/units/rotation.hpp"
-#include "sensornd.hpp"
 
 namespace emblib::devices {
 
 /**
- * Angular velocity units in radians per second
+ * Gyroscope sensor type
+ * Data type is array of 3 rad/s values
  */
-using rps_t = units::radians_per_second<float>;
-
-/**
- * Gyroscope interface
- */
-class gyroscope : public sensornd<rps_t> {
-
-};
+using gyroscope = sensor<units::radians_per_second<float>[3]>;
 
 }

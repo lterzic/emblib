@@ -20,3 +20,6 @@ target_link_libraries(tests PRIVATE Catch2::Catch2WithMain emblib)
 include(CTest)
 include(Catch)
 catch_discover_tests(tests)
+
+add_executable(test_main test.cpp)
+target_link_libraries(test_main PRIVATE emblib)
