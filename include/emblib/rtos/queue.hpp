@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/units/time.hpp"
 #include "details/queue_native.hpp"
 

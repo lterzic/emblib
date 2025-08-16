@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/math/matrix.hpp"
 #include "emblib/math/vector.hpp"
 #include <etl/delegate.h>

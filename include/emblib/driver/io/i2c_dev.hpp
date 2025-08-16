@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/io/istream.hpp"
 #include "emblib/io/ostream.hpp"
 #include "i2c_bus.hpp"

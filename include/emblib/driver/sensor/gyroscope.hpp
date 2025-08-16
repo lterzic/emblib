@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "emblib/units/rotation.hpp"
 #include "sensornd.hpp"
 

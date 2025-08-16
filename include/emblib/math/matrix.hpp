@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "details/matrix_native.hpp"
 
 namespace emblib::math {

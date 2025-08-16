@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include "task.hpp"
 #include <FreeRTOS.h>
 #include <queue.h>

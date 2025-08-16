@@ -48,22 +48,6 @@ target_link_libraries(emblib PUBLIC
     units
 )
 
-# If this is the top level project then use the default
-# configuration else expect it to exist
-if (PROJECT_IS_TOP_LEVEL)
-    # Use the default emblib config
-    target_include_directories(emblib PUBLIC ${PROJECT_SOURCE_DIR}/src)
-else()
-    if (TARGET emblib_config)
-        target_link_libraries(emblib PUBLIC emblib_config)
-    else()
-        message(FATAL_ERROR "emblib: Config not found, create an interface library"
-        "and add include directory which holds the emblib config file:"
-        "add_library(emblib_config INTERFACE)"
-        "target_include_directories(emblib_config INTERFACE <path>)")
-    endif()
-endif()
-
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
     # Use the default FreeRTOS configuration

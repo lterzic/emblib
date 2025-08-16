@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 #include <Eigen/Dense>
 
 namespace emblib::math::details {

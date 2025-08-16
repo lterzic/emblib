@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emblib/emblib.hpp"
 
 namespace emblib::driver {
 
