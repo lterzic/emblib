@@ -2,13 +2,18 @@
 
 #include "sensor.hpp"
 #include "emblib/units/rotation.hpp"
+#include <etl/array.h>
 
 namespace emblib::devices {
 
 /**
- * Gyroscope sensor type
- * Data type is array of 3 rad/s values
+ * SI rotation units - radians per second
  */
-using gyroscope = sensor<units::radians_per_second<float>[3]>;
+using gyroscope_units = units::radians_per_second<float>;
+
+/**
+ * Gyroscope sensor type
+ */
+using gyroscope = sensor<etl::array<gyroscope_units, 3>>;
 
 }

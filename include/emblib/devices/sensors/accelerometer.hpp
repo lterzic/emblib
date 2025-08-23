@@ -2,13 +2,18 @@
 
 #include "sensor.hpp"
 #include "emblib/units/speed.hpp"
+#include <etl/array.h>
 
 namespace emblib::devices {
 
 /**
- * Accelerometer sensor type
- * Data type is array of 3 m/s^2 values
+ * SI acceleration units - meters per second squared
  */
-using accelerometer = sensor<units::meters_per_second_squared<float>[3]>;
+using accelerometer_units = units::meters_per_second_squared<float>;
+
+/**
+ * Accelerometer sensor type
+ */
+using accelerometer = sensor<etl::array<accelerometer_units, 3>>;
 
 }
