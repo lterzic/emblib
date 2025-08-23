@@ -5,7 +5,7 @@
 
 namespace emblib::rtos {
 
-inline bool mutex::lock(milliseconds<size_t> timeout) noexcept
+inline bool mutex::lock(units::milliseconds<size_t> timeout) noexcept
 {
     return freertos::mutex::take(timeout);
 }

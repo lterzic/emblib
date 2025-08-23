@@ -5,13 +5,11 @@
 
 namespace emblib::rtos {
 
-using namespace emblib::units;
-
 /**
  * Buffer for static stack allocation
  */
 template <size_t SIZE_BYTES>
-using task_stack_t = uint8_t[SIZE_BYTES];
+using task_stack = uint8_t[SIZE_BYTES];
 
 /**
  * Task interface
@@ -20,7 +18,7 @@ class task : private details::task_native_t {
 
 public:
     template <size_t STACK_SIZE_BYTES>
-    explicit task(const char* name, size_t priority, task_stack_t<STACK_SIZE_BYTES>& stack);
+    explicit task(const char* name, size_t priority, task_stack<STACK_SIZE_BYTES>& stack);
     virtual ~task() = default;
 
     /* Copy operations not allowed */
@@ -32,20 +30,10 @@ public:
     task& operator=(task&&) = delete;
 
     /**
-     * Start the scheduler
-     */
-    static inline void start_scheduler() noexcept;
-
-    /**
-     * Is the CPU currently managed by a scheduler
-     */
-    static inline bool is_scheduler_running() noexcept;
-
-    /**
      * Put the currently running thread to sleep
      * @note Static since can be called even baremetal and implemented using HAL
      */
-    static inline void sleep(milliseconds<size_t> duration) noexcept;
+    static void sleep(units::milliseconds<size_t> duration) noexcept;
 
     /**
      * Increment this task's notification value
@@ -65,7 +53,7 @@ protected:
      * @note First time this is called, next wake up time is relative to task creation
      * @todo Can change return type to bool to signal if woke up on time
      */
-    void sleep_periodic(milliseconds<size_t> period) noexcept;
+    void sleep_periodic(units::milliseconds<size_t> period) noexcept;
 
     /**
      * Wait for this task to get notified
@@ -74,7 +62,7 @@ protected:
      * @returns True if the notification was received before
      * the timeout passed, else false
      */
-    bool wait_notification(milliseconds<size_t> timeout) noexcept;
+    bool wait_notification(units::milliseconds<size_t> timeout) noexcept;
 
 private:
     /**
@@ -88,14 +76,14 @@ private:
  * Task with internal stack
  */
 template <size_t STACK_SIZE_BYTES>
-class task_static : public task {
+class static_task : public task {
 public:
-    explicit task_static(const char* name, size_t priority) :
+    explicit static_task(const char* name, size_t priority) :
         task(name, priority, m_stack)
     {}
 
 private:
-    task_stack_t<STACK_SIZE_BYTES> m_stack;
+    task_stack<STACK_SIZE_BYTES> m_stack;
 };
 
 }

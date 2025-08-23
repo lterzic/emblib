@@ -5,8 +5,6 @@
 
 namespace emblib::rtos {
 
-using namespace emblib::units;
-
 /**
  * Mutex
  * @note Can be used with std guards and locks
@@ -28,7 +26,7 @@ public:
      * Try to lock the mutex within the given timeout. If successful
      * returns true, else false.
      */
-    bool lock(milliseconds<size_t> timeout = milliseconds<size_t>(-1)) noexcept;
+    bool lock(units::milliseconds<size_t> timeout = units::milliseconds<size_t>(-1)) noexcept;
 
     /**
      * Try to unlock the mutex. It will only be successful if

@@ -5,8 +5,6 @@
 
 namespace emblib::rtos {
 
-using namespace emblib::units;
-
 /**
  * Thread-safe FIFO queue
  */
@@ -28,7 +26,7 @@ public:
      * Send item to the queue
      * @returns `false` on timeout, else `true`
      */
-    bool send(const item_type& item, milliseconds<size_t> timeout) noexcept;
+    bool send(const item_type& item, units::milliseconds<size_t> timeout) noexcept;
 
     /**
      * Send item to the queue, don't block if queue is full
@@ -40,12 +38,12 @@ public:
      * Receive item from the queue
      * @returns `false` on timeout, else `true`
      */
-    bool receive(item_type& buffer, milliseconds<size_t> timeout) noexcept;
+    bool receive(item_type& buffer, units::milliseconds<size_t> timeout) noexcept;
 
     /**
      * Similar to receive, but doesn't remove the item from the queue
      */
-    bool peek(item_type& buffer, milliseconds<size_t> timeout) noexcept;
+    bool peek(item_type& buffer, units::milliseconds<size_t> timeout) noexcept;
 
 };
 

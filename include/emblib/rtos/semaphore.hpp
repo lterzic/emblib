@@ -5,8 +5,6 @@
 
 namespace emblib::rtos {
 
-using namespace emblib::units;
-
 /**
  * Semaphore (Binary or Counting)
  */
@@ -29,7 +27,7 @@ public:
     /**
      * Wait for a semaphore token and decrement once available
      */
-    bool wait(milliseconds<size_t> timeout = milliseconds<size_t>(-1)) noexcept;
+    bool wait(units::milliseconds<size_t> timeout = units::milliseconds<size_t>(-1)) noexcept;
 
     /**
      * Increment the semaphore count

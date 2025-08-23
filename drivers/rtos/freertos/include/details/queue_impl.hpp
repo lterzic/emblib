@@ -6,7 +6,7 @@
 namespace emblib::rtos {
 
 template <typename item_type, size_t CAPACITY>
-inline bool queue<item_type, CAPACITY>::send(const item_type& item, milliseconds<size_t> timeout) noexcept
+inline bool queue<item_type, CAPACITY>::send(const item_type& item, units::milliseconds<size_t> timeout) noexcept
 {
     return freertos::queue<item_type, CAPACITY>::send(&item, timeout);
 }
@@ -18,13 +18,13 @@ inline bool queue<item_type, CAPACITY>::send_from_isr(const item_type& item) noe
 }
 
 template <typename item_type, size_t CAPACITY>
-inline bool queue<item_type, CAPACITY>::receive(item_type& buffer, milliseconds<size_t> timeout) noexcept
+inline bool queue<item_type, CAPACITY>::receive(item_type& buffer, units::milliseconds<size_t> timeout) noexcept
 {
     return freertos::queue<item_type, CAPACITY>::receive(&buffer, timeout);
 }
 
 template <typename item_type, size_t CAPACITY>
-inline bool queue<item_type, CAPACITY>::peek(item_type& buffer, milliseconds<size_t> timeout) noexcept
+inline bool queue<item_type, CAPACITY>::peek(item_type& buffer, units::milliseconds<size_t> timeout) noexcept
 {
     return freertos::queue<item_type, CAPACITY>::peek(&buffer, timeout);
 }

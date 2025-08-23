@@ -7,36 +7,11 @@
 namespace emblib::rtos::freertos {
 
 /**
- * Possible FreeRTOS scheduler states
- */
-enum class scheduler_state_e {
-    SUSPENDED   = taskSCHEDULER_SUSPENDED,
-    NOT_STARTED = taskSCHEDULER_NOT_STARTED,
-    RUNNING     = taskSCHEDULER_RUNNING,
-};
-
-/**
- * Start FreeRTOS scheduler
-*/
-static inline void start_scheduler() noexcept
-{
-    vTaskStartScheduler();
-}
-
-/**
- * Return the scheduler state
- */
-static inline scheduler_state_e get_scheduler_state() noexcept
-{
-    return static_cast<scheduler_state_e>(xTaskGetSchedulerState());
-}
-
-/**
  * Stack buffer for a FreeRTOS task, where `SIZE` is the
  * number of words for the allocation
  */
 template <size_t SIZE_WORDS>
-using task_stack_t = StackType_t[SIZE_WORDS];
+using task_stack = StackType_t[SIZE_WORDS];
 
 /**
  * Tick as the time unit defined with respect to the FreeRTOS config parameter
@@ -56,7 +31,7 @@ public:
     explicit task(
         const char* name,
         size_t priority,
-        task_stack_t<STACK_SIZE_WORDS>& stack
+        task_stack<STACK_SIZE_WORDS>& stack
     ) :
         m_task_handle(xTaskCreateStatic(
             reinterpret_cast<void (*)(void*)>(&task_entry),
