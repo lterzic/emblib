@@ -15,16 +15,21 @@ public:
     {
         (void)timeout;
         
-        m_fstream.read(buffer, size);
-        return m_fstream.gcount();
+        m_iostream.read(buffer, size);
+        return m_iostream.gcount();
     }
 
     ssize_t write(const char* data, size_t size, timeout_t timeout) noexcept override
     {
         (void)timeout;
 
-        m_fstream.write(data, size);
-        return true;
+        m_iostream.write(data, size);
+        return size;
+    }
+
+    bidir_mode_e get_bidir_mode() const noexcept override
+    {
+        return bidir_mode_e::HALF_DUPLEX;
     }
 
 private:
