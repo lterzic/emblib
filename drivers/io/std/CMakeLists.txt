@@ -1,5 +1,5 @@
 # Provide header implementations
-target_include_directories(emblib
+target_include_prefix(emblib
 PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    emblib/io/std ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

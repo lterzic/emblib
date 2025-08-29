@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14)
+
+# CMake custom scripts
+include("cmake/add_submodule.cmake")
+include("cmake/include_prefix.cmake")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -32,7 +36,6 @@ target_link_options(emblib PRIVATE
 )
 
 # Libraries used by emblib
-include("cmake/addsubmodule.cmake")
 add_submodule("lib/etl")
 add_submodule("lib/units")
 
