@@ -12,7 +12,7 @@ PUBLIC
 # Compile definitions to reduce binary size and
 # prevent heap usage
 target_compile_definitions(emblib
-PUBLIC
+PRIVATE
     EIGEN_NO_MALLOC
     EIGEN_NO_IO
 )

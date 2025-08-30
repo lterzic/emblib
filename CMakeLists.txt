@@ -16,20 +16,23 @@ add_library(emblib STATIC
 )
 
 # Add include folders
-target_include_directories(emblib PUBLIC
+target_include_directories(emblib
+PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
 )
 
 # Useful compiler and linker options for embedded environments
 # Even though this is header only, submodules (like FreeRTOS
 # or Eigen) can benefit from these
-target_compile_options(emblib PRIVATE
+target_compile_options(emblib
+PRIVATE
     -fno-rtti
     -fno-exceptions
     -fdata-sections
     -ffunction-sections
 )
-target_link_options(emblib PRIVATE
+target_link_options(emblib
+PRIVATE
     -Wl,-Map=${CMAKE_PROJECT_NAME}.map
     -Wl,--gc-sections
     -nostdlib++
@@ -40,13 +43,15 @@ add_submodule("lib/etl")
 add_submodule("lib/units")
 
 # Libary options
-target_compile_definitions(emblib PUBLIC
+target_compile_definitions(emblib
+PRIVATE
     UNIT_LIB_DISABLE_IOSTREAM
     DISABLE_PREDEFINED_UNITS
 )
 
 # Link all sublibraries
-target_link_libraries(emblib PUBLIC
+target_link_libraries(emblib
+PUBLIC
     etl::etl
     units
 )
