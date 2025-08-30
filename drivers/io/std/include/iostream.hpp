@@ -1,39 +1,45 @@
 #pragma once
 
-#include "emblib/io/iostream.hpp"
+#include "emblib/io/istream.hpp"
+#include "emblib/io/ostream.hpp"
 #include <iostream>
 
 namespace emblib::io::std {
 
-class iostream : public emblib::io::iostream {
+class istream : public emblib::io::istream {
 public:
-    explicit iostream(::std::iostream& iostream) :
-        m_iostream(iostream)
+    explicit istream(::std::istream& istream) :
+        m_istream(istream)
     {}
 
     ssize_t read(char* buffer, size_t size, timeout_t timeout) noexcept override
     {
         (void)timeout;
         
-        m_iostream.read(buffer, size);
-        return m_iostream.gcount();
+        m_istream.read(buffer, size);
+        return m_istream.gcount();
     }
+
+private:
+    ::std::istream& m_istream;
+};
+
+class ostream : public emblib::io::ostream {
+public:
+    explicit ostream(::std::ostream& ostream) :
+        m_ostream(ostream)
+    {}
 
     ssize_t write(const char* data, size_t size, timeout_t timeout) noexcept override
     {
         (void)timeout;
 
-        m_iostream.write(data, size);
+        m_ostream.write(data, size);
         return size;
     }
 
-    bidir_mode_e get_bidir_mode() const noexcept override
-    {
-        return bidir_mode_e::HALF_DUPLEX;
-    }
-
 private:
-    ::std::iostream& m_iostream;
+    ::std::ostream& m_ostream;
 };
 
 }

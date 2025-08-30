@@ -1,12 +1,13 @@
 #pragma once
 
-#include "iostream.hpp"
+#include "istream.hpp"
+#include "ostream.hpp"
 #include "emblib/rtos/mutex.hpp"
 
 namespace emblib::io {
 
 template <typename data_type>
-class locked_iostream_base : public iostream_base<data_type> {
+class locked_iostream_base : public istream_base<data_type>, public ostream_base<data_type> {
 public:
     explicit locked_iostream_base(
         istream_base<data_type>& istream,
@@ -76,11 +77,6 @@ public:
             return true;
         }
         return false;
-    }
-
-    bidir_mode_e get_bidir_mode() const noexcept override
-    {
-        return bidir_mode_e::HALF_DUPLEX;
     }
 
 private:

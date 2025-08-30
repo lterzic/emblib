@@ -1,9 +1,10 @@
-#include "emblib/io/iostream.hpp"
+#include "emblib/io/istream.hpp"
+#include "emblib/io/ostream.hpp"
 #include "catch2/catch_test_macros.hpp"
 #include <string>
 #include <sstream>
 
-class iostream_buffer : public emblib::io::iostream {
+class iostream_buffer : public emblib::io::istream, public emblib::io::ostream {
 public:
     ssize_t read(char* buffer, size_t size, emblib::io::timeout_t timeout) noexcept override
     {
@@ -16,11 +17,6 @@ public:
         (void)timeout;
         m_data.append(data, size);
         return size;
-    }
-
-    bidir_mode_e get_bidir_mode() const noexcept override
-    {
-        return bidir_mode_e::HALF_DUPLEX;
     }
 
 private:
