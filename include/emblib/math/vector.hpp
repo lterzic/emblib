@@ -22,7 +22,7 @@ public:
     vector(scalar_type scalar = scalar_type(0)) :
         matrix<scalar_type, DIM, 1, base_type>(scalar) {}
 
-    vector(const std::initializer_list<scalar_type>& elements) :
+    vector(std::initializer_list<scalar_type> elements) :
         matrix<scalar_type, DIM, 1, base_type>({elements}) {}
 
     template <typename other_base>
