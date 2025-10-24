@@ -19,16 +19,12 @@ class kalman {
 public:
     explicit kalman() noexcept :
         m_state(0),
-        m_state_predict(0),
-        m_p(0),
-        m_p_predict(0)
+        m_p(0)
     {}
 
     explicit kalman(vec_t<STATE_DIM> initial_state) noexcept :
         m_state(initial_state),
-        m_state_predict(0),
-        m_p(0),
-        m_p_predict(0)
+        m_p(0)
     {}
 
     /**
@@ -49,8 +45,8 @@ public:
         const auto Fj = F(m_state);
 
         // Compute the prediction
-        m_state_predict = f(m_state);
-        m_p_predict = Fj.matmul(m_p).matmul(Fj.transpose()) + Q;
+        m_state = f(m_state);
+        m_p = Fj.matmul(m_p).matmul(Fj.transpose()) + Q;
     }
 
     /**
@@ -72,15 +68,15 @@ public:
         const vec_t<OBS_DIM>& observation
     ) noexcept
     {
-        const auto Hj = H(m_state_predict);
+        const auto Hj = H(m_state);
         const auto HjT = Hj.transpose();
 
-        const vec_t<OBS_DIM> obs_diff = observation - h(m_state_predict);
-        const mat_t<OBS_DIM> obs_cov = Hj.matmul(m_p_predict).matmul(HjT) + R;
-        const mat_t<STATE_DIM, OBS_DIM> kalman_gain = m_p_predict.matmul(HjT).matdivr(obs_cov);
+        const vec_t<OBS_DIM> obs_diff = observation - h(m_state);
+        const mat_t<OBS_DIM> obs_cov = Hj.matmul(m_p).matmul(HjT) + R;
+        const mat_t<STATE_DIM, OBS_DIM> kalman_gain = m_p.matmul(HjT).matdivr(obs_cov);
 
-        m_state = m_state_predict + kalman_gain.matmul(obs_diff);
-        m_p = m_p_predict - kalman_gain.matmul(Hj).matmul(m_p_predict);
+        m_state += kalman_gain.matmul(obs_diff);
+        m_p -= kalman_gain.matmul(Hj).matmul(m_p);
     }
 
     /**
@@ -94,12 +90,8 @@ public:
 private:
     // Current state
     vec_t<STATE_DIM> m_state;
-    // Predicted state
-    vec_t<STATE_DIM> m_state_predict;
     // Estimated covariance matrix (P)
     mat_t<STATE_DIM> m_p;
-    // Covariance matrix prediction
-    mat_t<STATE_DIM> m_p_predict;
 };
 
 }
