@@ -33,7 +33,12 @@ public:
      * Used when static casting to this type
      * @note See operator typecast method
      */
-    using scalar_type_trait = scalar_type;
+    using scalar_t = scalar_type;
+
+    /**
+     * Underlying implementation matrix type
+     */
+    using base_t = base_type;
 
 public:
     /**
@@ -88,7 +93,7 @@ public:
     template <typename cast_type>
     explicit operator cast_type() const noexcept
     {
-        return cast<typename cast_type::scalar_type_trait>();
+        return cast<typename cast_type::scalar_t>();
     }
 
     /**
