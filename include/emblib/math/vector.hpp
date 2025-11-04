@@ -19,7 +19,13 @@ public:
     template <typename other_base>
     using vector_same_t = vector<scalar_type, DIM, other_base>;
 
-    vector(scalar_type scalar = scalar_type(0)) :
+    vector() :
+        matrix<scalar_type, DIM, 1, base_type>() {}
+
+    explicit vector(base_type base) :
+        matrix<scalar_type, DIM, 1, base_type>(base) {}
+
+    vector(scalar_type scalar) :
         matrix<scalar_type, DIM, 1, base_type>(scalar) {}
 
     vector(std::initializer_list<scalar_type> elements) :

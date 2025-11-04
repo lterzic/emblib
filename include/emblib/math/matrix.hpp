@@ -42,6 +42,13 @@ public:
 
 public:
     /**
+     * Default constructor
+     * @note Initial data will depend on the underlying implementation
+     * @todo Allow this only if base_type == matrix_native_t
+     */
+    matrix() noexcept : m_base() {}
+
+    /**
      * Base constructor for creating this wrapper from implementation types
      */
     explicit matrix(base_type base) noexcept : m_base(base) {}
