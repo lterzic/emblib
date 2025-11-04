@@ -16,6 +16,16 @@ inline void task::sleep(units::milliseconds<size_t> duration) noexcept
     vTaskDelay(freertos::ticks_t(duration).value());
 }
 
+inline void task::suspend() noexcept
+{
+    freertos::task::suspend();
+}
+
+inline void task::resume() noexcept
+{
+    freertos::task::resume();
+}
+
 inline void task::notify() noexcept
 {
     freertos::task::notify_give();

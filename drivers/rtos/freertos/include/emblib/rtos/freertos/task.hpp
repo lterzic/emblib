@@ -53,6 +53,22 @@ public:
     task& operator=(task&&) = delete;
 
     /**
+     * Put the task in the SUSPENDED state
+     */
+    void suspend() noexcept
+    {
+        vTaskSuspend(m_task_handle);
+    }
+
+    /**
+     * Put the task in the READY state if previously suspended
+     */
+    void resume() noexcept
+    {
+        vTaskResume(m_task_handle);
+    }
+
+    /**
      * Increment task's notification value (works like a counting semaphore)
      */
     void notify_give() noexcept

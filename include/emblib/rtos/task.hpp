@@ -36,6 +36,17 @@ public:
     static void sleep(units::milliseconds<size_t> duration) noexcept;
 
     /**
+     * Suspend this task indefinitely
+     * @note Only way to have it continue execution is by calling `task::resume`
+     */
+    void suspend() noexcept;
+
+    /**
+     * Allow execution of the task if it was previously suspended
+     */
+    void resume() noexcept;
+
+    /**
      * Increment this task's notification value
      * @note Unblocks this task if is currently waiting on notification
      */
