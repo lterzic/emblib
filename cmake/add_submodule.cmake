@@ -9,7 +9,10 @@ macro(add_submodule path)
                     RESULT_VARIABLE result
                     OUTPUT_VARIABLE output
                     ERROR_VARIABLE error)
-    add_subdirectory(${path})
+    
+    # Provide the binary dir if required as the optional argument
+    add_subdirectory(${path} ${ARGV1})
+
     if(NOT result EQUAL 0)
         message(FATAL_ERROR "Failed to initialize submodule: ${path}\n${output}\n${error}")
     endif()

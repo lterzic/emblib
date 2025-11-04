@@ -58,29 +58,6 @@ PUBLIC
 
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)
-    # Use the default FreeRTOS configuration
-    add_library(freertos_config INTERFACE)
-    target_include_directories(freertos_config
-    SYSTEM INTERFACE
-        ${PROJECT_SOURCE_DIR}/test/rtos/freertos
-    )
-    target_compile_definitions(freertos_config
-    INTERFACE
-        projCOVERAGE_TEST=0
-        projENABLE_TRACING=0
-    )
-    add_subdirectory(drivers/rtos/freertos)
-    # Use Eigen as the default math library
-    add_subdirectory(drivers/math/eigen)
-
-    # Add the testing library and all the tests
-    add_submodule("lib/Catch2")
     add_subdirectory("test")
-
-    # Flags for the build
-    target_compile_options(emblib PUBLIC -Wall -Wextra -Wpedantic)
-    set(CMAKE_BUILD_TYPE Debug)
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+    # TODO: Add a custom command for testing (cmake test)
 endif()
-
-# TODO: Add a custom command for testing (cmake test)
