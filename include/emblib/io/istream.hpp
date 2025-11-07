@@ -56,12 +56,18 @@ public:
     /**
      * Abort currently active read operation
      * 
-     * @note Default implementation is doing nothing since the default
-     * implementation of the `read_async` is the synchronouse `read`
+     * @return If `true` was returned, the `read_async` operation was
+     * stopped correctly and the provided callback should be called
+     * with status `-1`. If `false` is returned, either the async operation
+     * couldn't be stopped or there wasn't one active.
+     * 
+     * @note Default implementation returns `false` since the default
+     * implementation of the `read_async` is the synchronous, and will
+     * only return once the operation is complete.
      */
     virtual bool abort_async_read() noexcept
     {
-        return true;
+        return false;
     }
 };
 

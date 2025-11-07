@@ -45,7 +45,7 @@ public:
      * @note Default implementation is a synchronous `write` with timeout
      * set to -1 (maximum)
      */
-    virtual bool write_async(const char* data, size_t size, callback_t cb) noexcept
+    virtual bool write_async(const data_type* data, size_t size, callback_t cb) noexcept
     {
         cb(write(data, size, timeout_t(-1)));
         return true;
@@ -54,12 +54,18 @@ public:
     /**
      * Abort currently active write operation
      * 
-     * @note Default implementation is doing nothing since the default
-     * implementation of the `write_async` is the synchronouse `write`
+     * @return If `true` was returned, the `write_async` operation was
+     * stopped correctly and the provided callback should be called
+     * with status `-1`. If `false` is returned, either the async operation
+     * couldn't be stopped or there wasn't one active.
+     * 
+     * @note Default implementation returns `false` since the default
+     * implementation of the `write_async` is the synchronous, and will
+     * only return once the operation is complete.
      */
     virtual bool abort_async_write() noexcept
     {
-        return true;
+        return false;
     }
 };
 
