@@ -41,10 +41,9 @@ inline void task::sleep_periodic(units::milliseconds<size_t> duration) noexcept
     freertos::task::sleep_periodic(duration);
 }
 
-inline bool task::wait_notification(units::milliseconds<size_t> timeout) noexcept
+inline bool task::wait_notification(units::milliseconds<size_t> timeout, bool clear_count) noexcept
 {
-    freertos::task::notify_take(timeout, false);
-    return true;
+    return freertos::task::notify_take(timeout, clear_count);
 }
 
 }

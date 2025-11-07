@@ -67,13 +67,15 @@ protected:
     void sleep_periodic(units::milliseconds<size_t> period) noexcept;
 
     /**
-     * Wait for this task to get notified
-     * @note Lightweight version of a semaphore which can be
-     * taken only by this task
+     * Wait for this task to get notified, ie. for the task's notification
+     * value to become greater than zero
+     * @param clear_count If true, task's notification values is cleared rather
+     * than decremented
+     * @note Lightweight version of a semaphore which can be taken only by this task
      * @returns True if the notification was received before
      * the timeout passed, else false
      */
-    bool wait_notification(units::milliseconds<size_t> timeout) noexcept;
+    bool wait_notification(units::milliseconds<size_t> timeout, bool clear_count = false) noexcept;
 
 private:
     /**

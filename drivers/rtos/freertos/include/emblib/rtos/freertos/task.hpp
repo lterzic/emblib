@@ -88,11 +88,11 @@ public:
 protected:
     /**
      * Wait for a notification to this task
-     * @todo Return the notification count before it is decremented (cleared)
+     * @returns `true` if a notification was received before timeout
      */
-    void notify_take(ticks_t timeout, bool clear_count = false) noexcept
+    bool notify_take(ticks_t timeout, bool clear_count = false) noexcept
     {
-        ulTaskNotifyTake(clear_count, timeout.value());
+        return ulTaskNotifyTake(clear_count, timeout.value());
     }
 
     /**
