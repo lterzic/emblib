@@ -29,19 +29,20 @@ public:
         m_kd(kd),
         m_clamp(true),
         m_clamp_low(clamp_low),
-        m_clamp_high(clamp_high)
+        m_clamp_high(clamp_high),
+        m_saturated(0)
     {}
 
     /**
      * Update PID state with the next input value
     */
-    void update(const scalar_type& input, coeff_type dt = 1) noexcept
+    void update(const scalar_type& input, coeff_type dt = coeff_type(1)) noexcept
     {
         m_output = m_kp * input + (m_ki * dt) * m_integral + (m_kd / dt) * (input - m_prev_input);
 
         if (m_clamp) {
             // Only contributing to the integral when not saturated
-            m_integral += (scalar_type)!m_saturated * input;
+            m_integral += static_cast<scalar_type>(!m_saturated) * input;
 
             // Check whether there is saturation
             auto sat_high = m_output >= m_clamp_high;
@@ -49,8 +50,8 @@ public:
             m_saturated = sat_high || sat_low;
             
             // Vector (arithmetic) implementation of clamping the output
-            m_output = (scalar_type)!sat_high * m_output + (scalar_type)sat_high * m_clamp_high;
-            m_output = (scalar_type)!sat_low * m_output + (scalar_type)sat_low * m_clamp_low;
+            m_output = static_cast<scalar_type>(!sat_high) * m_output + static_cast<scalar_type>(sat_high) * m_clamp_high;
+            m_output = static_cast<scalar_type>(!sat_low) * m_output + static_cast<scalar_type>(sat_low) * m_clamp_low;
         } else {
             m_integral += input;
         }
@@ -71,7 +72,7 @@ private:
     bool m_clamp;
     scalar_type m_clamp_low;
     scalar_type m_clamp_high;
-    scalar_type m_saturated = 0;
+    scalar_type m_saturated;
 
     scalar_type m_output = 0;
     scalar_type m_integral = 0;
