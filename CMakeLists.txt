@@ -11,31 +11,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(emblib VERSION 1.0)
 
 # Create a static library with a dummy source file
-add_library(emblib STATIC
-    src/main.cpp
-)
+add_library(emblib INTERFACE)
 
 # Add include folders
 target_include_directories(emblib
-PUBLIC
+INTERFACE
     "${PROJECT_SOURCE_DIR}/include"
-)
-
-# Useful compiler and linker options for embedded environments
-# Even though this is header only, submodules (like FreeRTOS
-# or Eigen) can benefit from these
-target_compile_options(emblib
-PRIVATE
-    -fno-rtti
-    -fno-exceptions
-    -fdata-sections
-    -ffunction-sections
-)
-target_link_options(emblib
-PRIVATE
-    -Wl,-Map=${CMAKE_PROJECT_NAME}.map
-    -Wl,--gc-sections
-    -nostdlib++
 )
 
 # Libraries used by emblib
@@ -44,14 +25,14 @@ add_submodule("lib/units")
 
 # Libary options
 target_compile_definitions(emblib
-PRIVATE
+INTERFACE
     UNIT_LIB_DISABLE_IOSTREAM
     DISABLE_PREDEFINED_UNITS
 )
 
 # Link all sublibraries
 target_link_libraries(emblib
-PUBLIC
+INTERFACE
     etl::etl
     units
 )

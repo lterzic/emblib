@@ -18,13 +18,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/math/eigen ${CMAKE_CURRENT_BINARY
 # Add the testing library and all the tests
 add_submodule("${PROJECT_SOURCE_DIR}/lib/Catch2" ${PROJECT_BINARY_DIR}/lib/Catch2)
 
-# Flags for the build
-target_compile_options(emblib PUBLIC -Wall -Wextra -Wpedantic)
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-
-enable_testing()
-
+# All tests are ran as a single executable currently
 add_executable(tests
     dsp/kalman.test.cpp
     dsp/iir.test.cpp
@@ -38,11 +32,30 @@ add_executable(tests
     rtos/mutex.test.cpp
 )
 
-target_link_libraries(tests PRIVATE Catch2::Catch2WithMain emblib)
+# Flags for the build
+target_compile_options(tests
+PUBLIC
+    -Wall
+    -Wextra
+    -Wpedantic
+)
+
+# Using Catch2 library for testing
+target_link_libraries(tests
+PRIVATE
+    Catch2::Catch2WithMain
+    emblib
+    emblib_math_eigen
+    emblib_rtos_freertos
+)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
 include(CTest)
 include(Catch)
 catch_discover_tests(tests)
 
+# Dummy executable to test simple things
 add_executable(test_main test.cpp)
 target_link_libraries(test_main PRIVATE emblib)

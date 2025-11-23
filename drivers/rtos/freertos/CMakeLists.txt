@@ -1,3 +1,5 @@
+add_library(emblib_rtos_freertos INTERFACE)
+
 # If there is FreeRTOS in a parent project, use that, else use submodule
 if (TARGET freertos_kernel)
     message(STATUS "emblib: FreeRTOS inherited from a parent project")
@@ -9,14 +11,15 @@ else()
 endif()
 
 # Link the FreeRTOS library
-target_link_libraries(emblib
-PUBLIC
+target_link_libraries(emblib_rtos_freertos
+INTERFACE
+    emblib
     freertos_kernel
 )
 
 # Provide header implementations
 # TODO: This should be PRIVATE somehow (not directly used)
-target_include_directories(emblib
-PUBLIC
+target_include_directories(emblib_rtos_freertos
+INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

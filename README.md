@@ -2,10 +2,10 @@
 
 C++ library for embedded development.
 
-Intended to provide a consistent API to different hardware and software components, to enable writing platform-independent code. Provides wrappers for common dependencies such as math or RTOS libraries, Eigen and FreeRTOS implementations are provided. Standard libraries are used lightly, for headers like \<cstdint\> or \<functional\>, and dynamic allocation is completely avoided. Underlying library dependencies (such as FreeRTOS) can be configured in parent projects through CMake or auto configured with default settings by emblib.
+Intended to provide a consistent API to different hardware and software components, to enable writing platform-independent code. Provides wrappers for common dependencies such as math or RTOS libraries, Eigen and FreeRTOS implementations are provided. Standard libraries are used lightly, for headers like \<cstdint\> or \<cstddef\>. Underlying library dependencies (such as FreeRTOS) can be configured in parent projects through CMake or auto configured with default settings by emblib.
 
 Some APIs:
-- Drivers
+- Devices
     - Serial (char) devices - I2C, SPI
     - Sensors - Accelerometer, Gyro
     - GPIO
@@ -23,23 +23,28 @@ Some APIs:
     - PID controller
 
 ## Adding emblib to a project
-As emblib depends on other libraries which are fetched as git submodules, the easiest way to include all of them is to clone this repository recursively into the project.
+It's enough to clone (or add as a submodule) emblib into your project. Although emblib depends on other libraries (submodules), they are fetched during CMake configuration only if there are actually required based on which drivers are used.
+
 ```shell
-git clone --recursive https://github.com/terzaterza/emblib.git
+git clone https://github.com/lterzic/emblib.git
 ```
-The library can then be included to a CMake project by adding this subdirectory, and linking the library to your target. CMake library (target) name is `emblib`.
+
+The library can then be included to a CMake project by adding this subdirectory, and linking to the `emblib` target. `emblib` is an INTERFACE target meaning it only provides headers with API (interface) definitions. Implementations of these interfaces can be found in the `drivers` folder. Each of these drivers is a separate target which can be linked to your project by first adding the subdirectory of the driver, and then linking to the driver target.
+
 ```cmake
-# Create the emblib_config target here if needed
-# View the next section for info about the config
+# Assuming emblib can be found at directory libs/emblib,
+# the following adds the core interface and Eigen implementation
+# to the "app" executable
 
-add_subdirectory("<path-to-cloned-repo>")
-target_link_libraries(<target> PUBLIC/PRIVATE emblib)
+add_subdirectory("libs/emblib")
+add_subdirectory("libs/emblib/drivers/math/eigen")
+
+target_link_libraries(app PRIVATE emblib emblib_math_eigen)
 ```
-The header files will then be available via the path from the [include](include/) folder. Headers follow the namespace hierarchy according to the file path, for example a class defined in the [include/emblib/math](include/emblib/math/) folder will be in the namespace `emblib::math`.
 
-Header files are meant to be standalone, meaning it's enough to include only the file where the class you need is defined. All the necessary dependencies, including your custom emblib configuration, are included automatically.
+Namespace hierarchy follows the file path hierarchy, starting from the [include](include/) folder, for example a class defined in the [include/emblib/math](include/emblib/math/) folder will be in the namespace `emblib::math`. Header files are meant to be standalone, meaning it's enough to include only the file where the class you need is defined. All the necessary dependencies, including your custom emblib configuration, are included automatically.
 
-To use a `matrix` class for example, you would add the following to your code:
+To use a `matrix` class (which uses underlying Eigen matrices), you would add the following to your code:
 ```cpp
 #include <emblib/math/matrix.hpp>
 
@@ -49,30 +54,9 @@ void your_function()
 }
 ```
 
-## CMake configuration
+## Testing
 
-### emblib
-Configuration header file can (should) be provided by creating `emblib_config` target, before adding the emblib subdirectory, with the include directory attached to the target providing the `emblib_config.hpp`.
-```cmake
-# EMBLIB configuration
-add_library(emblib_config INTERFACE)
+Testing is currently done using Catch2. All test cases are bundled into a single executable defined in the
+[test/CMakeLists.txt](test/CMakeLists.txt) called tests. It is automatically built if this is the top level CMake project, but can also be manually built by adding the [test](test/) subdirectory from a parent CMake.
 
-target_include_directories(emblib_config INTERFACE
-    "<path-to-emblib_config.hpp>"
-)
-```
-If this target is not provided, a default configuration is used.
-
-### FreeRTOS
-FreeRTOS port will be provided by default, depending on the host operating system (GCC_POSIX on Linux). This can be overriden by specifying the port by setting the `FREERTOS_PORT` in a parent CMake project.
-
-For the configuration, `freertos_config` target can be provided with the include directory attached providing the `FreeRTOSConfig.h` file. If one does not exist, a default config file will be used, based on the GCC_POSIX port.
-
-FreeRTOS (static) library can also be provided, be creating `freertos_kernel` target in a parent CMake project.
-
-## Project structure
-Source files are split between `src` and `include` folders, where files in the `src` folder are used only within this project, but the files in the `include` folder are meant to be public, ie. included by projects that use this library.
-
-Dependencies (some of which might be optional) are located in the `external` folder, as git submodules.
-
-Testing is done using the `Catch2` framework and all the related files are in the `test` folder.
+Building generates the executable `build/test/tests` which runs all the test cases.
