@@ -3,7 +3,7 @@ add_library(emblib_math_eigen INTERFACE)
 # Use Eigen from this project's submodule
 # Might cause conflict if there is another Eigen
 # instance used elsewhere where emblib is used
-add_submodule("lib/eigen")
+add_submodule("external/eigen")
 
 # Link the Eigen library
 target_link_libraries(emblib_math_eigen

@@ -20,8 +20,8 @@ INTERFACE
 )
 
 # Libraries used by emblib
-add_submodule("lib/etl")
-add_submodule("lib/units")
+add_submodule("external/etl")
+add_submodule("external/units")
 
 # Libary options
 target_compile_definitions(emblib

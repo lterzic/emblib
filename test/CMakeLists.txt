@@ -16,7 +16,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/rtos/freertos ${CMAKE_CURRENT_BIN
 add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/math/eigen ${CMAKE_CURRENT_BINARY_DIR}/math/eigen)
 
 # Add the testing library and all the tests
-add_submodule("${PROJECT_SOURCE_DIR}/lib/Catch2" ${PROJECT_BINARY_DIR}/lib/Catch2)
+add_submodule("${PROJECT_SOURCE_DIR}/external/Catch2" ${PROJECT_BINARY_DIR}/external/Catch2)
 
 # All tests are ran as a single executable currently
 add_executable(tests
