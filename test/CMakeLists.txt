@@ -30,6 +30,7 @@ add_executable(tests
     rtos/freertos/hooks.c
     rtos/queue.test.cpp
     rtos/mutex.test.cpp
+    rtos/lfalloc.test.cpp
 )
 
 # Flags for the build
