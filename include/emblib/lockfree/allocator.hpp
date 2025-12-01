@@ -3,63 +3,63 @@
 #include <atomic>
 
 // TODO: Define as alignas(alignof(block_u)) if using cache
-#define EMBLIB_LFALLOC_BUFFER_ALIGN
+#define EMBLIB_LOCKFREE_ALLOCATOR_ALIGN
 
-namespace emblib::rtos {
+namespace emblib::lockfree {
 
 /**
  * Lock-free thread safe allocation from a pre-allocated buffer
  */
 template<typename data_type, size_t CAPACITY>
-class lfalloc {
+class allocator {
     union block_u {
         uint8_t data[sizeof(data_type)];
         block_u* next;
     };
     
 public:
-    lfalloc() :
-        m_available_head(nullptr)
+    allocator() :
+        m_available_head(nullptr),
+        m_allocated_count(0)
     {
         reset();
     }
     
-    lfalloc(const lfalloc&) = delete;
-    lfalloc& operator=(const lfalloc&) = delete;
-    lfalloc(lfalloc&&) = delete;
-    lfalloc& operator=(lfalloc&&) = delete;
+    allocator(const allocator&) = delete;
+    allocator& operator=(const allocator&) = delete;
+    allocator(allocator&&) = delete;
+    allocator& operator=(allocator&&) = delete;
     
     /**
-     * Lock-free allocation
+     * Allocate an empty slot
+     * @note Allocated buffer is not initialized
      * @returns Pointer to the allocated memory if there was any available,
      * else `nullptr`
      */
     data_type* alloc() noexcept
     {
         block_u* old_head = m_available_head.load(std::memory_order_acquire);
-        
+
         while (old_head != nullptr) {
             block_u* new_head = old_head->next;
-            
+
             // Try to atomically update head pointer
             if (m_available_head.compare_exchange_weak(old_head, new_head,
                                                std::memory_order_release,
                                                std::memory_order_acquire)) {
-                // Success - we got the block
                 m_allocated_count.fetch_add(1, std::memory_order_relaxed);
                 return reinterpret_cast<data_type*>(old_head);
             }
-            
             // Compare and swap failed, old_head was updated by compare_exchange_weak
             // Loop will retry with new value
         }
         
-        // If old_head (m_available_head) became nullptr, the entire buffer is allocated
+        // If old_head (m_available_head) is nullptr, the entire buffer is allocated
         return nullptr;
     }
     
     /**
-     * Lock-free deallocation
+     * Deallocate a slot
      * @note The provided pointer must originate from the `alloc` method of this
      * object, otherwise undefined behavior
      */
@@ -112,12 +112,12 @@ public:
 
 private:
     // Pre-allocated m_buffer for all blocks
-    EMBLIB_LFALLOC_BUFFER_ALIGN uint8_t m_buffer[sizeof(block_u) * CAPACITY];
+    EMBLIB_LOCKFREE_ALLOCATOR_ALIGN uint8_t m_buffer[sizeof(block_u) * CAPACITY];
     
     // Lock-free stack head using atomic pointer
     std::atomic<block_u*> m_available_head;
     // Not required - used to fetch allocation count in O(1)
-    std::atomic<size_t> m_allocated_count{0};
+    std::atomic<size_t> m_allocated_count;
 };
 
 }
