@@ -1,7 +1,7 @@
 #include "emblib/lockfree/allocator.hpp"
 #include "catch2/catch_test_macros.hpp"
 
-TEST_CASE("RTOS allocator test", "[lockfree][allocator]")
+TEST_CASE("Lock-free allocator test", "[lockfree][allocator]")
 {
     using message_t = char[32];
     constexpr size_t TEST_SIZE = 4;

@@ -31,6 +31,7 @@ add_executable(tests
     rtos/queue.test.cpp
     rtos/mutex.test.cpp
     lockfree/allocator.test.cpp
+    lockfree/spsc_queue.test.cpp
 )
 
 # Flags for the build
