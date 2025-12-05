@@ -1,9 +1,12 @@
-add_library(emblib_math_eigen INTERFACE)
+FetchContent_Declare(
+    eigen
+    GIT_REPOSITORY  https://gitlab.com/libeigen/eigen.git
+    GIT_TAG         5.0.1
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(eigen)
 
-# Use Eigen from this project's submodule
-# Might cause conflict if there is another Eigen
-# instance used elsewhere where emblib is used
-add_submodule("external/eigen")
+add_library(emblib_math_eigen INTERFACE)
 
 # Link the Eigen library
 target_link_libraries(emblib_math_eigen

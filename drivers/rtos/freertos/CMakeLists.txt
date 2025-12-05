@@ -1,14 +1,12 @@
-add_library(emblib_rtos_freertos INTERFACE)
+FetchContent_Declare(
+    freertos_kernel
+    GIT_REPOSITORY  https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+    GIT_TAG         V11.2.0
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(freertos_kernel)
 
-# If there is FreeRTOS in a parent project, use that, else use submodule
-if (TARGET freertos_kernel)
-    message(STATUS "emblib: FreeRTOS inherited from a parent project")
-else()
-    message(STATUS "emblib: Using the FreeRTOS submodule from emblib, to "
-    "use a different source for FreeRTOS define a freertos_kernel target "
-    "in a parent project")
-    add_submodule("external/FreeRTOS-Kernel")
-endif()
+add_library(emblib_rtos_freertos INTERFACE)
 
 # Link the FreeRTOS library
 target_link_libraries(emblib_rtos_freertos

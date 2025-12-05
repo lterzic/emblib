@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
 
-# CMake custom scripts
-include("cmake/add_submodule.cmake")
-include("cmake/include_prefix.cmake")
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -20,8 +16,23 @@ INTERFACE
 )
 
 # Libraries used by emblib
-add_submodule("external/etl")
-add_submodule("external/units")
+include(FetchContent)
+
+FetchContent_Declare(
+    etl
+    GIT_REPOSITORY  https://github.com/ETLCPP/etl.git
+    GIT_TAG         20.44.1
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(etl)
+
+FetchContent_Declare(
+    units
+    GIT_REPOSITORY  https://github.com/nholthaus/units.git
+    GIT_TAG         v2.3.5
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(units)
 
 # Libary options
 target_compile_definitions(emblib

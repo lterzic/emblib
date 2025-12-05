@@ -16,7 +16,13 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/rtos/freertos ${CMAKE_CURRENT_BIN
 add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/math/eigen ${CMAKE_CURRENT_BINARY_DIR}/math/eigen)
 
 # Add the testing library and all the tests
-add_submodule("${PROJECT_SOURCE_DIR}/external/Catch2" ${PROJECT_BINARY_DIR}/external/Catch2)
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY  https://github.com/catchorg/Catch2.git
+    GIT_TAG         v3.11.0
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(Catch2)
 
 # All tests are ran as a single executable currently
 add_executable(tests
