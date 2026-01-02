@@ -2,6 +2,7 @@
 
 #include "emblib/units/time.hpp"
 #include "details/mutex_native.hpp"
+#include "lock.hpp"
 
 namespace emblib::rtos {
 
@@ -34,26 +35,6 @@ public:
      */
     bool unlock() noexcept;
 
-};
-
-/**
- * Locks the mutex until the end of this scope
- */
-class scoped_lock {
-public:
-    explicit scoped_lock(mutex& mutex) noexcept :
-        m_mutex(mutex)
-    {
-        m_mutex.lock();
-    }
-
-    ~scoped_lock() noexcept
-    {
-        m_mutex.unlock();
-    }
-
-private:
-    mutex& m_mutex;
 };
 
 }

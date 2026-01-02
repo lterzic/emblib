@@ -36,6 +36,7 @@ add_executable(tests
     rtos/freertos/hooks.c
     rtos/queue.test.cpp
     rtos/mutex.test.cpp
+    rtos/spinlock.test.cpp
     lockfree/allocator.test.cpp
     lockfree/spsc_queue.test.cpp
 )
