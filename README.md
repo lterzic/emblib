@@ -29,7 +29,7 @@ It's enough to clone (or add as a submodule) emblib into your project. Although 
 git clone https://github.com/lterzic/emblib.git
 ```
 
-The library can then be included to a CMake project by adding this subdirectory, and linking to the `emblib` target. `emblib` is an INTERFACE target meaning it only provides headers with API (interface) definitions. Implementations of these interfaces can be found in the `drivers` folder. Each of these drivers is a separate target which can be linked to your project by first adding the subdirectory of the driver, and then linking to the driver target.
+The library can then be included to a CMake project by adding this subdirectory, and linking to the `emblib` target. `emblib` is an INTERFACE target meaning it only provides headers with API (interface) definitions. Implementations of these interfaces can be found in the `drivers` folder. Each of these drivers is a separate target which can be linked to your project by linking to the driver target.
 
 ```cmake
 # Assuming emblib can be found at directory libs/emblib,
@@ -37,9 +37,13 @@ The library can then be included to a CMake project by adding this subdirectory,
 # to the "app" executable
 
 add_subdirectory("libs/emblib")
-add_subdirectory("libs/emblib/drivers/math/eigen")
 
-target_link_libraries(app PRIVATE emblib emblib_math_eigen)
+target_link_libraries(app
+PRIVATE
+    emblib
+    emblib_math_eigen
+    emblib_rtos_freertos
+)
 ```
 
 Namespace hierarchy follows the file path hierarchy, starting from the [include](include/) folder, for example a class defined in the [include/emblib/math](include/emblib/math/) folder will be in the namespace `emblib::math`. Header files are meant to be standalone, meaning it's enough to include only the file where the class you need is defined. All the necessary dependencies, including your custom emblib configuration, are included automatically.

@@ -6,10 +6,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(emblib VERSION 1.0)
 
-# Create a static library with a dummy source file
+# Library definition
 add_library(emblib INTERFACE)
-
-# Add include folders
 target_include_directories(emblib
 INTERFACE
     "${PROJECT_SOURCE_DIR}/include"
@@ -47,6 +45,10 @@ INTERFACE
     etl::etl
     units
 )
+
+# Add all driver targets
+include(cmake/include_prefix.cmake)
+add_subdirectory(drivers)
 
 # Testing environment only if top level project
 if (PROJECT_IS_TOP_LEVEL)

@@ -1,3 +1,12 @@
+# Include directory containing the FreeRTOSConfig.h file should
+# be added to this target
+add_library(freertos_config INTERFACE)
+target_compile_definitions(freertos_config
+INTERFACE
+    projCOVERAGE_TEST=0
+    projENABLE_TRACING=0
+)
+
 FetchContent_Declare(
     freertos_kernel
     GIT_REPOSITORY  https://github.com/FreeRTOS/FreeRTOS-Kernel.git

@@ -1,20 +1,3 @@
-# Use the default FreeRTOS configuration
-add_library(freertos_config INTERFACE)
-target_include_directories(freertos_config
-SYSTEM INTERFACE
-    rtos/freertos
-)
-target_compile_definitions(freertos_config
-INTERFACE
-    projCOVERAGE_TEST=0
-    projENABLE_TRACING=0
-)
-
-# Using FreeRTOS and Eigen as default implementations
-# TODO: Make test for each implementation
-add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/rtos/freertos ${CMAKE_CURRENT_BINARY_DIR}/rtos/freertos)
-add_subdirectory(${PROJECT_SOURCE_DIR}/drivers/math/eigen ${CMAKE_CURRENT_BINARY_DIR}/math/eigen)
-
 # Add the testing library and all the tests
 FetchContent_Declare(
     Catch2
@@ -56,6 +39,12 @@ PRIVATE
     emblib
     emblib_math_eigen
     emblib_rtos_freertos
+)
+
+# Use the default FreeRTOS configuration
+target_include_directories(freertos_config
+SYSTEM INTERFACE
+    rtos/freertos
 )
 
 set(CMAKE_BUILD_TYPE Debug)
