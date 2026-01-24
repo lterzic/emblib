@@ -11,7 +11,7 @@ class udp_stream : public emblib::io::istream, public emblib::io::ostream {
 
 public:
     explicit udp_stream(const char* send_ip, int send_port, int bind_port = -1);
-    ~udp_stream();
+    virtual ~udp_stream();
     
     ssize_t write(const char* data, size_t size, emblib::io::timeout_t timeout) noexcept override;
     ssize_t read(char* data, size_t size, emblib::io::timeout_t timeout) noexcept override;
