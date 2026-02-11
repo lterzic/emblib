@@ -19,10 +19,10 @@ TEST_CASE("Lock-free SPSC queue test", "[lockfree][spsc_queue]")
 
     for (size_t i = 0; i < TEST_SIZE; i++) {
         message msg;
-        REQUIRE((queue.pop(&msg) && msg.value == i));
+        REQUIRE((queue.pop(msg) && msg.value == i));
     }
     
     message tmp;
-    REQUIRE(!queue.pop(&tmp));
+    REQUIRE(!queue.pop(tmp));
 
 }

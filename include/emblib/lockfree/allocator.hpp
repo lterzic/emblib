@@ -1,11 +1,8 @@
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
 #include <atomic>
-
-// TODO: Define as alignas(alignof(block_u)) if using cache
-#define EMBLIB_LOCKFREE_ALLOCATOR_ALIGN
+#include <cstddef>
+#include <cstdint>
 
 namespace emblib::lockfree {
 
@@ -114,7 +111,7 @@ public:
 
 private:
     // Pre-allocated m_buffer for all blocks
-    EMBLIB_LOCKFREE_ALLOCATOR_ALIGN uint8_t m_buffer[sizeof(block_u) * CAPACITY];
+    alignas(block_u) uint8_t m_buffer[sizeof(block_u) * CAPACITY];
     
     // Lock-free stack head using atomic pointer
     std::atomic<block_u*> m_available_head;
