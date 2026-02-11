@@ -22,6 +22,7 @@ add_executable(tests
     rtos/spinlock.test.cpp
     lockfree/allocator.test.cpp
     lockfree/spsc_queue.test.cpp
+    lockfree/spmc_queue.test.cpp
 )
 
 # Flags for the build
