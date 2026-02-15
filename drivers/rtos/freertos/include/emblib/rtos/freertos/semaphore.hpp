@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task.hpp"
+#include "chrono.hpp"
 #include <FreeRTOS.h>
 #include <semphr.h>
 
@@ -41,7 +41,7 @@ public:
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
-    bool take(ticks_t timeout) noexcept
+    bool take(ticks timeout) noexcept
     {
         return xSemaphoreTake(m_semaphore_handle, timeout.value()) == pdTRUE;
     }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "chrono.hpp"
 #include "emblib/units/time.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
@@ -12,14 +13,6 @@ namespace emblib::rtos::freertos {
  */
 template <size_t SIZE_WORDS>
 using task_stack = StackType_t[SIZE_WORDS];
-
-/**
- * Tick as the time unit defined with respect to the FreeRTOS config parameter
- */
-using ticks_t = ::units::unit_t<
-    ::units::unit<std::ratio<1, configTICK_RATE_HZ>, units::details::seconds_unit>,
-    unsigned int
->;
 
 /**
  * FreeRTOS Task
@@ -90,7 +83,7 @@ protected:
      * Wait for a notification to this task
      * @returns `true` if a notification was received before timeout
      */
-    bool notify_take(ticks_t timeout, bool clear_count = false) noexcept
+    bool notify_take(ticks timeout, bool clear_count = false) noexcept
     {
         return ulTaskNotifyTake(clear_count, timeout.value());
     }
@@ -99,7 +92,7 @@ protected:
      * Sleep relative to previous wake up time
      * @returns `true` if wakeup was delayed, false if woke up on time
      */
-    bool sleep_periodic(ticks_t period) noexcept
+    bool sleep_periodic(ticks period) noexcept
     {
         if (m_first_period) {
             m_first_period = false;

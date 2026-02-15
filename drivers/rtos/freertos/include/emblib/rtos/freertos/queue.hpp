@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task.hpp"
+#include "chrono.hpp"
 #include <FreeRTOS.h>
 #include <queue.h>
 
@@ -28,7 +28,7 @@ public:
     /**
      * Queue send
      */
-    bool send(const item_type* item, ticks_t timeout) noexcept
+    bool send(const item_type* item, ticks timeout) noexcept
     {
         static_assert(std::is_trivially_copyable_v<item_type>);
         return xQueueSend(m_queue_handle, item, timeout.value()) == pdTRUE;
@@ -45,7 +45,7 @@ public:
     /**
      * Receive item from queue
      */
-    bool receive(item_type* buffer, ticks_t timeout) noexcept
+    bool receive(item_type* buffer, ticks timeout) noexcept
     {
         return xQueueReceive(m_queue_handle, buffer, timeout.value()) == pdTRUE;
     }
@@ -55,7 +55,7 @@ public:
      * @note Like receive, but doesn't remove the item
      * from the queue
      */
-    bool peek(item_type* buffer, ticks_t timeout) noexcept
+    bool peek(item_type* buffer, ticks timeout) noexcept
     {
         return xQueuePeek(m_queue_handle, buffer, timeout.value()) == pdTRUE;
     }
