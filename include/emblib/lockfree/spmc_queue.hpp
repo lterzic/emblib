@@ -14,6 +14,70 @@ class spmc_queue {
     static_assert(std::is_trivially_copyable_v<item_type>);
     static_assert(std::is_trivially_destructible_v<item_type>);
 public:
+    template <bool CHECK_OVERFLOW>
+    class reader {
+    public:
+        explicit reader(const spmc_queue& queue, bool from_current) :
+            m_queue(&queue),
+            m_read_ptr(from_current ? queue.m_write_ptr.load() : 0)
+        {}
+
+        reader(const reader& reader) :
+            m_queue(reader.m_queue),
+            m_read_ptr(reader.m_read_ptr.load())
+        {}
+
+        reader& operator=(const reader& reader)
+        {
+            m_queue = reader.m_queue;
+            m_read_ptr = reader.m_read_ptr.load();
+            return *this;
+        }
+
+        /**
+         * Read an item if available.
+         * 
+         * @note If `CHECK_OVERFLOW` is false, this function
+         * asserts that no overflow has happened.
+         */
+        bool read(item_type& item_buffer) noexcept
+        {
+            if (m_read_ptr == m_queue->m_write_ptr)
+                return false;
+
+            if constexpr(CHECK_OVERFLOW) {
+                // We assert because we can't recover
+                assert(!has_overflowed());
+            }
+
+            item_buffer = get_item(m_read_ptr % CAPACITY);
+            m_read_ptr++;
+            return true;
+        }
+
+        /**
+         * Check if the queue has overflowed, and the item
+         * we were supposed to read was overwritten.
+         */
+        bool has_overflowed() const noexcept
+        {
+            return m_queue->m_alloc_ptr > m_read_ptr + CAPACITY;
+        }
+    
+    private:
+        /**
+         * Get a copy of a queue item.
+         */
+        auto get_item(size_t idx) noexcept {
+            return *reinterpret_cast<const item_type*>(m_queue->m_buffer + idx * sizeof(item_type));
+        }
+    
+    private:
+        const spmc_queue* m_queue;
+        std::atomic<size_t> m_read_ptr;
+    };
+
+public:
     spmc_queue() :
         m_alloc_ptr(0),
         m_write_ptr(0)
@@ -64,57 +128,6 @@ private:
     item_type* get_slot(size_t idx) noexcept {
         return reinterpret_cast<item_type*>(m_buffer + idx * sizeof(item_type));
     }
-
-    template <bool CHECK_OVERFLOW>
-    class reader {
-    public:
-        explicit reader(const spmc_queue& queue, bool from_current) :
-            m_queue(queue),
-            m_read_ptr(from_current ? queue.m_write_ptr.load() : 0)
-        {}
-
-        /**
-         * Read an item if available.
-         * 
-         * @note If `CHECK_OVERFLOW` is false, this function
-         * asserts that no overflow has happened.
-         */
-        bool read(item_type& item_buffer) noexcept
-        {
-            if (m_read_ptr == m_queue.m_write_ptr)
-                return false;
-
-            if constexpr(CHECK_OVERFLOW) {
-                // We assert because we can't recover
-                assert(!has_overflowed());
-            }
-
-            item_buffer = get_item(m_read_ptr % CAPACITY);
-            m_read_ptr++;
-            return true;
-        }
-
-        /**
-         * Check if the queue has overflowed, and the item
-         * we were supposed to read was overwritten.
-         */
-        bool has_overflowed() const noexcept
-        {
-            return m_queue.m_alloc_ptr > m_read_ptr + CAPACITY;
-        }
-    
-    private:
-        /**
-         * Get a copy of a queue item.
-         */
-        auto get_item(size_t idx) noexcept {
-            return *reinterpret_cast<const item_type*>(m_queue.m_buffer + idx * sizeof(item_type));
-        }
-    
-    private:
-        const spmc_queue& m_queue;
-        std::atomic<size_t> m_read_ptr;
-    };
 
 private:
     alignas(item_type) uint8_t m_buffer[sizeof(item_type) * CAPACITY];

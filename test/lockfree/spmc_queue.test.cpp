@@ -27,6 +27,12 @@ TEST_CASE("Lock-free SPMC queue test", "[lockfree][spmc_queue]")
         REQUIRE_FALSE(reader.read(msg));
     }
 
+    {
+        message msg;
+        auto reader_copy = reader;
+        REQUIRE_FALSE(reader_copy.read(msg));
+    }
+
     for (size_t i = 0; i < TEST_SIZE + 1; i++) {
         message msg;
         msg.value = i;
