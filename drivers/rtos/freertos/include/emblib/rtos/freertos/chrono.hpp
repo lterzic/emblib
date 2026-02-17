@@ -11,7 +11,7 @@ namespace emblib::rtos::freertos {
  */
 using ticks = ::units::unit_t<
     ::units::unit<std::ratio<1, configTICK_RATE_HZ>, units::details::seconds_unit>,
-    unsigned int
+    size_t
 >;
 
 /**

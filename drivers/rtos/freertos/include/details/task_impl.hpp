@@ -10,12 +10,6 @@ inline task::task(const char* name, size_t priority, task_stack<STACK_SIZE_BYTES
     details::task_native_t(name, priority, (freertos::task_stack<sizeof(stack) / sizeof(freertos::task_stack<1>)>&)stack)
 {}
 
-inline void task::sleep(units::milliseconds<size_t> duration) noexcept
-{
-    /// @todo Implement in FreeRTOS task as protected
-    vTaskDelay(freertos::ticks_t(duration).value());
-}
-
 inline void task::suspend() noexcept
 {
     freertos::task::suspend();
@@ -36,12 +30,17 @@ inline void task::notify_from_isr() noexcept
     freertos::task::notify_give_from_isr();
 }
 
-inline void task::sleep_periodic(units::milliseconds<size_t> duration) noexcept
+inline void task::sleep(ticks duration) noexcept
 {
-    freertos::task::sleep_periodic(duration);
+    freertos::task::sleep(duration);
 }
 
-inline bool task::wait_notification(units::milliseconds<size_t> timeout, bool clear_count) noexcept
+inline void task::sleep_periodic(ticks period) noexcept
+{
+    freertos::task::sleep_periodic(period);
+}
+
+inline bool task::wait_notification(ticks timeout, bool clear_count) noexcept
 {
     return freertos::task::notify_take(timeout, clear_count);
 }

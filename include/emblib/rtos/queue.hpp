@@ -1,7 +1,7 @@
 #pragma once
 
-#include "emblib/units/time.hpp"
 #include "details/queue_native.hpp"
+#include "chrono.hpp"
 
 namespace emblib::rtos {
 
@@ -10,7 +10,6 @@ namespace emblib::rtos {
  */
 template <typename item_type, size_t CAPACITY>
 class queue : private details::queue_native_t<item_type, CAPACITY> {
-
 public:
     explicit queue() = default;
 
@@ -26,7 +25,7 @@ public:
      * Send item to the queue
      * @returns `false` on timeout, else `true`
      */
-    bool send(const item_type& item, units::milliseconds<size_t> timeout) noexcept;
+    bool send(const item_type& item, ticks timeout) noexcept;
 
     /**
      * Send item to the queue, don't block if queue is full
@@ -38,12 +37,12 @@ public:
      * Receive item from the queue
      * @returns `false` on timeout, else `true`
      */
-    bool receive(item_type& buffer, units::milliseconds<size_t> timeout) noexcept;
+    bool receive(item_type& buffer, ticks timeout) noexcept;
 
     /**
      * Similar to receive, but doesn't remove the item from the queue
      */
-    bool peek(item_type& buffer, units::milliseconds<size_t> timeout) noexcept;
+    bool peek(item_type& buffer, ticks timeout) noexcept;
 
 };
 

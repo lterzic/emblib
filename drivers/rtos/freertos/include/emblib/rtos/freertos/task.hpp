@@ -89,6 +89,14 @@ protected:
     }
 
     /**
+     * Sleep for a given number of ticks.
+     */
+    void sleep(ticks duration) noexcept
+    {
+        vTaskDelay(duration.value());
+    }
+
+    /**
      * Sleep relative to previous wake up time
      * @returns `true` if wakeup was delayed, false if woke up on time
      */

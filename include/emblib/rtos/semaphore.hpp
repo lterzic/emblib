@@ -1,7 +1,8 @@
 #pragma once
 
-#include "emblib/units/time.hpp"
 #include "details/semaphore_native.hpp"
+#include "chrono.hpp"
+#include <cassert>
 
 namespace emblib::rtos {
 
@@ -9,7 +10,6 @@ namespace emblib::rtos {
  * Semaphore (Binary or Counting)
  */
 class semaphore : private details::semaphore_native_t {
-
 public:
     explicit semaphore(size_t max_count = 1) noexcept
     {
@@ -27,7 +27,7 @@ public:
     /**
      * Wait for a semaphore token and decrement once available
      */
-    bool wait(units::milliseconds<size_t> timeout = units::milliseconds<size_t>(-1)) noexcept;
+    bool wait(ticks timeout = MAX_TICKS) noexcept;
 
     /**
      * Increment the semaphore count

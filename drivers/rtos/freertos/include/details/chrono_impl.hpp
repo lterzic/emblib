@@ -5,9 +5,9 @@
 
 namespace emblib::rtos {
 
-inline tick_clock::time_point tick_clock::now() noexcept
+inline ticks tick_clock::get_ticks() noexcept
 {
-    return time_point(freertos::get_ticks());
+    return freertos::get_ticks();
 }
 
 }

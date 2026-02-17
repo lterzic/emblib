@@ -1,7 +1,7 @@
 #pragma once
 
-#include "emblib/units/time.hpp"
 #include "details/task_native.hpp"
+#include "chrono.hpp"
 
 namespace emblib::rtos {
 
@@ -15,7 +15,6 @@ using task_stack = uint8_t[SIZE_BYTES];
  * Task interface
  */
 class task : private details::task_native_t {
-
 public:
     template <size_t STACK_SIZE_BYTES>
     explicit task(const char* name, size_t priority, task_stack<STACK_SIZE_BYTES>& stack);
@@ -28,12 +27,6 @@ public:
     /* Move operations not allowed */
     task(task&&) = delete;
     task& operator=(task&&) = delete;
-
-    /**
-     * Put the currently running thread to sleep
-     * @note Static since can be called even baremetal and implemented using HAL
-     */
-    static void sleep(units::milliseconds<size_t> duration) noexcept;
 
     /**
      * Suspend this task indefinitely
@@ -60,11 +53,16 @@ public:
 
 protected:
     /**
+     * Put this task to sleep
+     */
+    void sleep(ticks duration) noexcept;
+
+    /**
      * Put this task to sleep until (last wake up time from this method + period)
      * @note First time this is called, next wake up time is relative to task creation
      * @todo Can change return type to bool to signal if woke up on time
      */
-    void sleep_periodic(units::milliseconds<size_t> period) noexcept;
+    void sleep_periodic(ticks period) noexcept;
 
     /**
      * Wait for this task to get notified, ie. for the task's notification
@@ -75,7 +73,7 @@ protected:
      * @returns True if the notification was received before
      * the timeout passed, else false
      */
-    bool wait_notification(units::milliseconds<size_t> timeout, bool clear_count = false) noexcept;
+    bool wait_notification(ticks timeout, bool clear_count = false) noexcept;
 
 private:
     /**

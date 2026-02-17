@@ -11,7 +11,8 @@ namespace emblib::rtos::freertos {
  */
 template <typename item_type, size_t CAPACITY>
 class queue {
-
+    static_assert(std::is_trivially_copyable_v<item_type>);
+    static_assert(std::is_trivially_destructible_v<item_type>);
 public:
     explicit queue() noexcept :
         m_queue_handle(xQueueCreateStatic(CAPACITY, sizeof(item_type), m_storage, &m_queue_buffer))
@@ -30,7 +31,6 @@ public:
      */
     bool send(const item_type* item, ticks timeout) noexcept
     {
-        static_assert(std::is_trivially_copyable_v<item_type>);
         return xQueueSend(m_queue_handle, item, timeout.value()) == pdTRUE;
     }
 
@@ -64,7 +64,7 @@ private:
     QueueHandle_t m_queue_handle;
     StaticQueue_t m_queue_buffer;
 
-    uint8_t m_storage[CAPACITY * sizeof(item_type)];
+    alignas(item_type) uint8_t m_storage[CAPACITY * sizeof(item_type)];
 
 };
 

@@ -5,7 +5,7 @@
 
 namespace emblib::rtos {
 
-inline bool semaphore::wait(units::milliseconds<size_t> timeout) noexcept
+inline bool semaphore::wait(ticks timeout) noexcept
 {
     return freertos::semaphore::take(timeout);
 }

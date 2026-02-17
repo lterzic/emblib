@@ -1,7 +1,6 @@
 #pragma once
 
 #include "details/chrono_native.hpp"
-#include <chrono>
 
 namespace emblib::rtos {
 
@@ -14,13 +13,13 @@ using ticks = details::ticks_native;
  * Steady clock based on the number of ticks since system start.
  */
 struct tick_clock {
-    using duration = ticks;
-    using time_point = std::chrono::time_point<tick_clock, duration>;
-
-    static constexpr bool is_steady = true;
-
-    static time_point now() noexcept;
+    static ticks get_ticks() noexcept;
 };
+
+/**
+ * Maximum number of ticks is used to specify an infinite timeout.
+ */
+constexpr inline ticks MAX_TICKS {(size_t)-1};
 
 }
 
