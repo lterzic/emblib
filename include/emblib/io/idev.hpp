@@ -1,7 +1,8 @@
 #pragma once
 
 #include "types.hpp"
-#include <cstddef>
+#include <etl/span.h>
+#include <cstdint>
 
 namespace emblib::io {
 
