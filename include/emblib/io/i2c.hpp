@@ -1,7 +1,6 @@
 #pragma once
 
-#include "idev.hpp"
-#include "odev.hpp"
+#include "iodev.hpp"
 #include "types.hpp"
 
 namespace emblib::io {
@@ -69,7 +68,7 @@ public:
 /**
  * I2C slave
  */
-class i2c_dev : public idev, odev {
+class i2c_dev : public iodev {
 public:
     i2c_dev(i2c_bus& bus, i2c_address address) :
         m_bus(bus),
