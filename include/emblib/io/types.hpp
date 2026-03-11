@@ -1,8 +1,8 @@
 #pragma once
 
-#include "emblib/units/time.hpp"
 #include <etl/delegate.h>
 #include <etl/expected.h>
+#include <chrono>
 
 namespace emblib::io {
 
@@ -40,8 +40,8 @@ using async_cb = etl::delegate<void (result)>;
  * Timeout specifies the unit of time during which the IO operation
  * is permitted to run once it has started.
  */
-struct timeout : public units::milliseconds<size_t> {
-    using units::milliseconds<size_t>::milliseconds;
+struct timeout : public std::chrono::duration<size_t, std::milli> {
+    using std::chrono::duration<size_t, std::milli>::duration;
 
     // Prevent any operations from starting. Used to check if the
     // device is ready.
