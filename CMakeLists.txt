@@ -46,6 +46,17 @@ INTERFACE
     units
 )
 
+# Add the testing library and all the tests
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY  https://github.com/catchorg/Catch2.git
+    GIT_TAG         v3.11.0
+    GIT_SHALLOW     TRUE
+)
+FetchContent_MakeAvailable(Catch2)
+include(CTest)
+include(Catch)
+
 # Add all driver targets
 include(cmake/include_prefix.cmake)
 add_subdirectory(drivers)

@@ -1,18 +1,9 @@
-# Add the testing library and all the tests
-FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY  https://github.com/catchorg/Catch2.git
-    GIT_TAG         v3.11.0
-    GIT_SHALLOW     TRUE
-)
-FetchContent_MakeAvailable(Catch2)
-
 # All tests are ran as a single executable currently
 add_executable(tests
     dsp/kalman.test.cpp
     dsp/iir.test.cpp
     dsp/pid.test.cpp
-    io/iostream.test.cpp
+    io/iodev.test.cpp
     math/matrix.test.cpp
     math/vector.test.cpp
     math/quaternion.test.cpp
