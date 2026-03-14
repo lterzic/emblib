@@ -2,7 +2,6 @@
 
 #include "emblib/math/matrix.hpp"
 #include "emblib/math/vector.hpp"
-#include <etl/delegate.h>
 
 namespace emblib::dsp {
 
@@ -35,12 +34,12 @@ public:
      * @see https://en.wikipedia.org/wiki/Extended_Kalman_filter
      * @todo `F` could return const matrix reference
      */
-    void predict(
-        etl::delegate<vec_t<STATE_DIM> (const vec_t<STATE_DIM>&)> f,
-        etl::delegate<mat_t<STATE_DIM> (const vec_t<STATE_DIM>&)> F,
-        const mat_t<STATE_DIM>& Q
-    ) noexcept
+    template <typename f_type, typename F_type>
+    void predict(f_type&& f, F_type&& F, const mat_t<STATE_DIM>& Q) noexcept
     {
+        static_assert(std::is_invocable_r_v<vec_t<STATE_DIM>, f_type, const vec_t<STATE_DIM>&>);
+        static_assert(std::is_invocable_r_v<mat_t<STATE_DIM>, F_type, const vec_t<STATE_DIM>&>);
+
         // State jacobian
         const auto Fj = F(m_state);
 
@@ -60,14 +59,17 @@ public:
      * @note The calculations are based on the last called `predict` method
      * @todo `H` could return const matrix reference
      */
-    template <size_t OBS_DIM>
+    template <size_t OBS_DIM, typename h_type, typename H_type>
     void update(
-        etl::delegate<vec_t<OBS_DIM> (const vec_t<STATE_DIM>&)> h,
-        etl::delegate<mat_t<OBS_DIM, STATE_DIM> (const vec_t<STATE_DIM>&)> H,
+        h_type&& h,
+        H_type&& H,
         const mat_t<OBS_DIM>& R,
         const vec_t<OBS_DIM>& observation
     ) noexcept
     {
+        static_assert(std::is_invocable_r_v<vec_t<OBS_DIM>, h_type, const vec_t<STATE_DIM>&>);
+        static_assert(std::is_invocable_r_v<mat_t<OBS_DIM, STATE_DIM>, H_type, const vec_t<STATE_DIM>&>);
+        
         const auto Hj = H(m_state);
         const auto HjT = Hj.transpose();
 
