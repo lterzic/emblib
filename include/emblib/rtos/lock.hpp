@@ -4,6 +4,10 @@
 
 namespace emblib::rtos {
 
+/**
+ * Mutex lock which lasts from creation until the end of the
+ * scope, with dead-lock prevention.
+ */
 template<typename... lock_types>
 class scoped_lock {
 public:
@@ -20,12 +24,12 @@ public:
 
     ~scoped_lock()
     {
-        unlock_impl(etl::index_sequence_for<lock_types...>{});
+        unlock(etl::index_sequence_for<lock_types...>{});
     }
 
 private:
     template<size_t... INDICES>
-    void unlock_impl(etl::index_sequence<INDICES...>) {
+    void unlock(etl::index_sequence<INDICES...>) {
         (..., etl::get<sizeof...(INDICES) - 1 - INDICES>(m_locks).unlock());
     }
 
