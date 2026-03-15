@@ -3,12 +3,12 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos::scheduler {
 
 /**
  * Possible FreeRTOS scheduler states
  */
-enum class scheduler_state_e {
+enum class state_e {
     SUSPENDED   = taskSCHEDULER_SUSPENDED,
     NOT_STARTED = taskSCHEDULER_NOT_STARTED,
     RUNNING     = taskSCHEDULER_RUNNING,
@@ -17,7 +17,7 @@ enum class scheduler_state_e {
 /**
  * Start FreeRTOS scheduler
 */
-static inline void start_scheduler() noexcept
+static inline void start() noexcept
 {
     vTaskStartScheduler();
 }
@@ -25,9 +25,9 @@ static inline void start_scheduler() noexcept
 /**
  * Return the scheduler state
  */
-static inline scheduler_state_e get_scheduler_state() noexcept
+static inline state_e get_state() noexcept
 {
-    return static_cast<scheduler_state_e>(xTaskGetSchedulerState());
+    return static_cast<state_e>(xTaskGetSchedulerState());
 }
 
 }

@@ -4,7 +4,7 @@
 #include <FreeRTOS.h>
 #include <queue.h>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos {
 
 /**
  * FreeRTOS queue
@@ -14,9 +14,14 @@ class queue {
     static_assert(std::is_trivially_copyable_v<item_type>);
     static_assert(std::is_trivially_destructible_v<item_type>);
 public:
-    explicit queue() noexcept :
+    queue() noexcept :
         m_queue_handle(xQueueCreateStatic(CAPACITY, sizeof(item_type), m_storage, &m_queue_buffer))
     {}
+
+    ~queue()
+    {
+        vQueueDelete(m_queue_handle);
+    }
 
     /* Copy operations not allowed */
     queue(const queue&) = delete;
@@ -29,25 +34,25 @@ public:
     /**
      * Queue send
      */
-    bool send(const item_type* item, ticks timeout) noexcept
+    bool send(const item_type& item, ticks timeout) noexcept
     {
-        return xQueueSend(m_queue_handle, item, timeout.value()) == pdTRUE;
+        return xQueueSend(m_queue_handle, &item, timeout.count()) == pdTRUE;
     }
 
     /**
      * Queue send from ISR
      */
-    bool send_from_isr(const item_type* item) noexcept
+    bool send_from_isr(const item_type& item) noexcept
     {
-        return xQueueSendFromISR(m_queue_handle, item, NULL) == pdTRUE;
+        return xQueueSendFromISR(m_queue_handle, &item, NULL) == pdTRUE;
     }
 
     /**
      * Receive item from queue
      */
-    bool receive(item_type* buffer, ticks timeout) noexcept
+    bool receive(item_type& buffer, ticks timeout) noexcept
     {
-        return xQueueReceive(m_queue_handle, buffer, timeout.value()) == pdTRUE;
+        return xQueueReceive(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
     }
 
     /**
@@ -55,9 +60,9 @@ public:
      * @note Like receive, but doesn't remove the item
      * from the queue
      */
-    bool peek(item_type* buffer, ticks timeout) noexcept
+    bool peek(item_type& buffer, ticks timeout) noexcept
     {
-        return xQueuePeek(m_queue_handle, buffer, timeout.value()) == pdTRUE;
+        return xQueuePeek(m_queue_handle, &buffer, timeout.count()) == pdTRUE;
     }
 
 private:

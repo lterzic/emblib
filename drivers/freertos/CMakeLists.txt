@@ -1,5 +1,5 @@
 # Include directory containing the FreeRTOSConfig.h file should
-# be added to this target
+# be added to this target by the user.
 add_library(freertos_config INTERFACE)
 target_compile_definitions(freertos_config
 INTERFACE
@@ -15,18 +15,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(freertos_kernel)
 
-add_library(emblib_rtos_freertos INTERFACE)
+add_library(emblib_freertos INTERFACE)
 
 # Link the FreeRTOS library
-target_link_libraries(emblib_rtos_freertos
+target_link_libraries(emblib_freertos
 INTERFACE
     emblib
     freertos_kernel
 )
 
 # Provide header implementations
-# TODO: This should be PRIVATE somehow (not directly used)
-target_include_directories(emblib_rtos_freertos
+target_include_prefix(emblib_freertos
 INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    emblib/freertos ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

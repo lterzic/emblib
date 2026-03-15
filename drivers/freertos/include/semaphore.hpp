@@ -4,13 +4,12 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos {
 
 /**
  * FreeRTOS semaphore
  */
 class semaphore {
-
 public:
     /**
      * Semaphore type depends on the provided max count
@@ -26,7 +25,11 @@ public:
         else
             m_semaphore_handle = xSemaphoreCreateCountingStatic(max_count, 0, &m_semaphore_buffer);
     }
-    virtual ~semaphore() = default;
+
+    virtual ~semaphore()
+    {
+        vSemaphoreDelete(m_semaphore_handle);
+    }
 
     /* Copy operations not allowed */
     semaphore(const semaphore&) = delete;
@@ -43,7 +46,7 @@ public:
     */
     bool take(ticks timeout) noexcept
     {
-        return xSemaphoreTake(m_semaphore_handle, timeout.value()) == pdTRUE;
+        return xSemaphoreTake(m_semaphore_handle, timeout.count()) == pdTRUE;
     }
 
     /**
@@ -70,13 +73,6 @@ private:
     StaticSemaphore_t m_semaphore_buffer;
     SemaphoreHandle_t m_semaphore_handle;
 
-};
-
-class mutex : public semaphore {
-public:
-    explicit mutex() :
-        semaphore(0)
-    {}
 };
 
 }
