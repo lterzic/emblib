@@ -40,17 +40,6 @@ using async_cb = etl::delegate<void (result)>;
  * Timeout specifies the unit of time during which the IO operation
  * is permitted to run once it has started.
  */
-struct timeout : public std::chrono::duration<size_t, std::milli> {
-    using std::chrono::duration<size_t, std::milli>::duration;
-
-    // Prevent any operations from starting. Used to check if the
-    // device is ready.
-    static const timeout NONE;
-    // Indefinite timeout
-    static const timeout MAX;
-};
-
-inline constexpr timeout timeout::NONE {0};
-inline constexpr timeout timeout::MAX {SIZE_MAX};
+using timeout = std::chrono::duration<size_t, std::milli>;
 
 }

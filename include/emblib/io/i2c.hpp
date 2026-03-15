@@ -35,7 +35,7 @@ public:
      */
     virtual etl::expected<void, error> read_async(i2c_address address, etl::span<uint8_t> buffer, async_cb cb) noexcept
     {
-        cb(read(address, buffer, timeout::MAX));
+        cb(read(address, buffer, timeout::max()));
         return {};
     }
 
@@ -44,7 +44,7 @@ public:
      */
     virtual etl::expected<void, error> write_async(i2c_address address, etl::span<const uint8_t> data, async_cb cb) noexcept
     {
-        cb(write(address, data, timeout::MAX));
+        cb(write(address, data, timeout::max()));
         return {};
     }
 

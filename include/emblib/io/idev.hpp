@@ -33,7 +33,7 @@ public:
      */
     virtual etl::expected<void, error> read_async(etl::span<data_type> buffer, async_cb cb) noexcept
     {
-        cb(read(buffer, timeout::MAX));
+        cb(read(buffer, timeout::max()));
         return {};
     }
 

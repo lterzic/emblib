@@ -27,10 +27,10 @@ TEST_CASE("IO dev through buffer", "[io][idev][odev]")
     constexpr std::string_view sv = "test string";
 
     buffer_dev dev;
-    dev.write(sv, emblib::io::timeout::NONE);
+    dev.write(sv, emblib::io::timeout::min());
     
     char buffer[2 * sv.size()];
-    auto result = dev.read(buffer, emblib::io::timeout::NONE);
+    auto result = dev.read(buffer, emblib::io::timeout::min());
 
     REQUIRE(result);
     REQUIRE(*result == sv.size());

@@ -32,7 +32,7 @@ public:
      */
     virtual etl::expected<void, error> write_async(etl::span<const data_type> buffer, async_cb cb) noexcept
     {
-        cb(write(buffer, timeout::MAX));
+        cb(write(buffer, timeout::max()));
         return {};
     }
 

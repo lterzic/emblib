@@ -10,9 +10,9 @@ namespace emblib::posix {
 static int
 to_poll_ms(io::timeout t) noexcept
 {
-    if (t == io::timeout::NONE)
+    if (t == io::timeout::min())
         return 0;
-    if (t == io::timeout::MAX)
+    if (t == io::timeout::max())
         return -1;
     return static_cast<int>(t.count());
 }
