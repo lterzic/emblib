@@ -44,16 +44,15 @@ public:
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
-    bool take(ticks timeout) noexcept
+    bool wait(ticks timeout) noexcept
     {
         return xSemaphoreTake(m_semaphore_handle, timeout.count()) == pdTRUE;
     }
 
     /**
      * Semaphore give
-     * @todo Similar to `take`, can return true if scheduler not started
     */
-    bool give() noexcept
+    bool signal() noexcept
     {
         return xSemaphoreGive(m_semaphore_handle) == pdTRUE;
     }
@@ -64,7 +63,7 @@ public:
      * interrupted does not block accidentally
      * @todo Can add higher prio task woken
      */
-    bool give_from_isr() noexcept
+    bool signal_from_isr() noexcept
     {
         return xSemaphoreGiveFromISR(m_semaphore_handle, NULL) == pdTRUE;
     }

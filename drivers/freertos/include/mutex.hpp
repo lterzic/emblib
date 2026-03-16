@@ -20,7 +20,7 @@ public:
      */
     bool lock(ticks timeout = ticks::max()) noexcept
     {
-        return take(timeout);
+        return wait(timeout);
     }
 
     /**
@@ -28,7 +28,7 @@ public:
      */
     bool unlock() noexcept
     {
-        return give();
+        return signal();
     }
 };
 
