@@ -20,7 +20,6 @@ add_library(emblib_freertos INTERFACE)
 # Link the FreeRTOS library
 target_link_libraries(emblib_freertos
 INTERFACE
-    emblib
     freertos_kernel
 )
 
@@ -29,3 +28,32 @@ target_include_prefix(emblib_freertos
 INTERFACE
     emblib/freertos ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+target_include_prefix(emblib_freertos
+INTERFACE
+    emblib/rtos/backend ${CMAKE_CURRENT_SOURCE_DIR}/backend
+)
+
+if (PROJECT_IS_TOP_LEVEL)
+    add_executable(emblib_freertos_tests
+        test/hooks.c
+        test/mutex_test.cpp
+        test/queue_test.cpp
+        test/semaphore_test.cpp
+    )
+
+    target_link_libraries(emblib_freertos_tests
+    PRIVATE
+        Catch2::Catch2WithMain
+        emblib
+        emblib_freertos
+    )
+
+    # Use the default FreeRTOS configuration
+    target_include_directories(freertos_config
+    SYSTEM INTERFACE
+        test
+    )
+
+    catch_discover_tests(emblib_freertos_tests)
+endif()
