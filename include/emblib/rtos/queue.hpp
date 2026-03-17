@@ -1,51 +1,32 @@
 #pragma once
 
-#include "details/queue_native.hpp"
 #include "chrono.hpp"
+#include <emblib/rtos/backend/queue.hpp>
+#include <type_traits>
 
 namespace emblib::rtos {
 
 /**
- * Thread-safe FIFO queue
+ * Queue API.
  */
-template <typename item_type, size_t CAPACITY>
-class queue : private details::queue_native_t<item_type, CAPACITY> {
-public:
-    explicit queue() = default;
-
-    /* Copy operations not allowed */
-    queue(const queue&) = delete;
-    queue& operator=(const queue&) = delete;
-
-    /* Move operations not allowed */
-    queue(queue&&) = delete;
-    queue& operator=(queue&&) = delete;
+template <template <typename item_type, size_t CAPACITY> typename queue_type, typename T, size_t C>
+using is_queue = std::conjunction<
+    std::is_constructible<queue_type<T, C>>,
 
     /**
-     * Send item to the queue
-     * @returns `false` on timeout, else `true`
+     * Place an item into the queue.
+     * @return True if the item was placed within the given timeout, else
+     * false, usually because the queue was full the entire duration.
      */
-    bool send(const item_type& item, ticks timeout) noexcept;
+    std::is_invocable_r<bool, decltype(&queue_type<T, C>::send), queue_type<T, C>&, const T&, timeout>,
 
     /**
-     * Send item to the queue, don't block if queue is full
-     * @note Same behavior as using `send` with timeout = 0
+     * Get an item from the queue, and remove it.
+     * @return True if the item was taken within the timeout.
      */
-    bool send_from_isr(const item_type& item) noexcept;
+    std::is_invocable_r<bool, decltype(&queue_type<T, C>::receive), queue_type<T, C>&, T&, timeout>
+>;
 
-    /**
-     * Receive item from the queue
-     * @returns `false` on timeout, else `true`
-     */
-    bool receive(item_type& buffer, ticks timeout) noexcept;
-
-    /**
-     * Similar to receive, but doesn't remove the item from the queue
-     */
-    bool peek(item_type& buffer, ticks timeout) noexcept;
-
-};
+static_assert(is_queue<queue, int, 0>::value);
 
 }
-
-#include "details/queue_impl.hpp"

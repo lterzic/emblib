@@ -4,13 +4,12 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos {
 
 /**
  * FreeRTOS semaphore
  */
 class semaphore {
-
 public:
     /**
      * Semaphore type depends on the provided max count
@@ -26,7 +25,11 @@ public:
         else
             m_semaphore_handle = xSemaphoreCreateCountingStatic(max_count, 0, &m_semaphore_buffer);
     }
-    virtual ~semaphore() = default;
+
+    virtual ~semaphore()
+    {
+        vSemaphoreDelete(m_semaphore_handle);
+    }
 
     /* Copy operations not allowed */
     semaphore(const semaphore&) = delete;
@@ -41,16 +44,15 @@ public:
      * @todo Can add checking if the scheduler has started and returning
      * `true` if not since that means there can be only 1 thread running
     */
-    bool take(ticks timeout) noexcept
+    bool wait(ticks timeout) noexcept
     {
-        return xSemaphoreTake(m_semaphore_handle, timeout.value()) == pdTRUE;
+        return xSemaphoreTake(m_semaphore_handle, timeout.count()) == pdTRUE;
     }
 
     /**
      * Semaphore give
-     * @todo Similar to `take`, can return true if scheduler not started
     */
-    bool give() noexcept
+    bool signal() noexcept
     {
         return xSemaphoreGive(m_semaphore_handle) == pdTRUE;
     }
@@ -61,7 +63,7 @@ public:
      * interrupted does not block accidentally
      * @todo Can add higher prio task woken
      */
-    bool give_from_isr() noexcept
+    bool signal_from_isr() noexcept
     {
         return xSemaphoreGiveFromISR(m_semaphore_handle, NULL) == pdTRUE;
     }
@@ -70,13 +72,6 @@ private:
     StaticSemaphore_t m_semaphore_buffer;
     SemaphoreHandle_t m_semaphore_handle;
 
-};
-
-class mutex : public semaphore {
-public:
-    explicit mutex() :
-        semaphore(0)
-    {}
 };
 
 }

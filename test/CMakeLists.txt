@@ -7,9 +7,6 @@ add_executable(tests
     math/matrix.test.cpp
     math/vector.test.cpp
     math/quaternion.test.cpp
-    rtos/freertos/hooks.c
-    rtos/queue.test.cpp
-    rtos/mutex.test.cpp
     rtos/spinlock.test.cpp
     lockfree/allocator.test.cpp
     lockfree/spsc_queue.test.cpp
@@ -30,20 +27,8 @@ PRIVATE
     Catch2::Catch2WithMain
     emblib
     emblib_math_eigen
-    emblib_rtos_freertos
 )
 
-# Use the default FreeRTOS configuration
-target_include_directories(freertos_config
-SYSTEM INTERFACE
-    rtos/freertos
-)
-
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-
-include(CTest)
-include(Catch)
 catch_discover_tests(tests)
 
 # Dummy executable to test simple things

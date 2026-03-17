@@ -1,48 +1,38 @@
 #pragma once
 
-#include "details/semaphore_native.hpp"
 #include "chrono.hpp"
-#include <cassert>
+#include <emblib/rtos/backend/semaphore.hpp>
+#include <type_traits>
 
 namespace emblib::rtos {
 
 /**
- * Semaphore (Binary or Counting)
+ * Semaphore API.
  */
-class semaphore : private details::semaphore_native_t {
-public:
-    explicit semaphore(size_t max_count = 1) noexcept
-    {
-        assert(max_count > 0);
-    }
-
-    /* Copy operations not allowed */
-    semaphore(const semaphore&) = delete;
-    semaphore& operator=(const semaphore&) = delete;
-
-    /* Move operations not allowed */
-    semaphore(semaphore&&) = delete;
-    semaphore& operator=(semaphore&&) = delete;
+template <typename semaphore_type>
+using is_semaphore = std::conjunction<
+    /**
+     * Semaphore is required to support default construction.
+     * Counting semaphore constructor can optionally be supported.
+     */
+    std::is_constructible<semaphore_type>,
 
     /**
-     * Wait for a semaphore token and decrement once available
+     * Wait on a signal and decrement once available.
+     * @returns Whether the signal was received within the given timeout.
      */
-    bool wait(ticks timeout = MAX_TICKS) noexcept;
+    std::is_invocable_r<bool, decltype(&semaphore_type::wait), semaphore_type&, timeout>,
 
     /**
-     * Increment the semaphore count
-     * @returns `false` if the semaphore was already at `max_count`, else `true`
+     * Signal on a given semaphore.
+     * @returns False if the semaphore was already at the highest count,
+     * else increments it and returns true.
+     * @note Semaphore API can optionally provide a separate method
+     * to signal from an ISR context.
      */
-    bool signal() noexcept;
+    std::is_invocable_r<bool, decltype(&semaphore_type::signal), semaphore_type&>
+>;
 
-    /**
-     * Same behaviour as `signal`, but some RTOS implementations don't allow
-     * calling the regular `signal` method from ISR context
-     */
-    bool signal_from_isr() noexcept;
-
-};
+static_assert(is_semaphore<semaphore>::value);
 
 }
-
-#include "details/semaphore_impl.hpp"

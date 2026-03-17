@@ -1,35 +1,43 @@
 #pragma once
 
 #include "chrono.hpp"
-#include "emblib/units/time.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos {
 
 /**
- * Stack buffer for a FreeRTOS task, where `SIZE` is the
- * number of words for the allocation
+ * Task stack specified by the number of words.
  */
 template <size_t SIZE_WORDS>
-using task_stack = StackType_t[SIZE_WORDS];
+using task_wstack = StackType_t[SIZE_WORDS];
+
+/**
+ * Task stack specified by the number of bytes, rounded up to
+ * be a multiple of the stack word size;
+ */
+template <size_t SIZE_BYTES>
+using task_bstack = task_wstack<(SIZE_BYTES + sizeof(StackType_t) - 1UL) / sizeof(StackType_t)>;
 
 /**
  * FreeRTOS Task
  */
 class task {
-
 public:
-    template <size_t STACK_SIZE_WORDS>
+    /**
+     * Create the task and set it to the ready state. Task is ready for
+     * execution as soon as the scheduler starts.
+     */
+    template <size_t STACK_WORDS>
     explicit task(
         const char* name,
         size_t priority,
-        task_stack<STACK_SIZE_WORDS>& stack
+        task_wstack<STACK_WORDS>& stack
     ) :
         m_task_handle(xTaskCreateStatic(
             reinterpret_cast<void (*)(void*)>(&task_entry),
             name,
-            STACK_SIZE_WORDS,
+            STACK_WORDS,
             this,
             priority,
             stack,
@@ -46,7 +54,8 @@ public:
     task& operator=(task&&) = delete;
 
     /**
-     * Put the task in the SUSPENDED state
+     * Put the task in the suspended state.
+     * @note Only way to have it continue execution is by calling `task::resume`.
      */
     void suspend() noexcept
     {
@@ -54,7 +63,7 @@ public:
     }
 
     /**
-     * Put the task in the READY state if previously suspended
+     * Put the task in the ready state if previously suspended.
      */
     void resume() noexcept
     {
@@ -62,30 +71,30 @@ public:
     }
 
     /**
-     * Increment task's notification value (works like a counting semaphore)
+     * Increment task's notification value (works like a counting semaphore).
      */
-    void notify_give() noexcept
+    void notify() noexcept
     {
         xTaskNotifyGive(m_task_handle);
     }
 
     /**
-     * Increment task's notification value
+     * Increment task's notification value.
      * @todo Add argument for higher priority task woken
      */
-    void notify_give_from_isr() noexcept
+    void notify_from_isr() noexcept
     {
         vTaskNotifyGiveFromISR(m_task_handle, NULL);
     }
 
 protected:
     /**
-     * Wait for a notification to this task
+     * Wait for a notification to this task.
      * @returns `true` if a notification was received before timeout
      */
-    bool notify_take(ticks timeout, bool clear_count = false) noexcept
+    bool wait_on_notify(ticks timeout, bool clear_count = false) noexcept
     {
-        return ulTaskNotifyTake(clear_count, timeout.value());
+        return ulTaskNotifyTake(clear_count, timeout.count());
     }
 
     /**
@@ -93,7 +102,7 @@ protected:
      */
     void sleep(ticks duration) noexcept
     {
-        vTaskDelay(duration.value());
+        vTaskDelay(duration.count());
     }
 
     /**
@@ -106,19 +115,19 @@ protected:
             m_first_period = false;
             m_prev_wakeup = xTaskGetTickCount();
         }
-        return xTaskDelayUntil(&m_prev_wakeup, period.value()) == pdTRUE;
+        return xTaskDelayUntil(&m_prev_wakeup, period.count()) == pdTRUE;
     }
 
 private:
     /**
-     * Task function
+     * Task function.
      */
     virtual void run() noexcept = 0;
 
     /**
      * Actual function which is called by the scheduler which then calls the
      * appropriate cpp style task function to allow for passing contexts to
-     * the thread
+     * the thread.
      */
     static void task_entry(task* instance) noexcept
     {

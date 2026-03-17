@@ -1,18 +1,15 @@
 #pragma once
 
-#include "emblib/units/time.hpp"
 #include <FreeRTOS.h>
 #include <task.h>
+#include <chrono>
 
-namespace emblib::rtos::freertos {
+namespace emblib::freertos {
 
 /**
  * Ticks are defined relative to 1 second based on the FreeRTOS config parameter.
  */
-using ticks = ::units::unit_t<
-    ::units::unit<std::ratio<1, configTICK_RATE_HZ>, units::details::seconds_unit>,
-    size_t
->;
+using ticks = std::chrono::duration<TickType_t, std::ratio<1, configTICK_RATE_HZ>>;
 
 /**
  * Get the number of ticks since system start.

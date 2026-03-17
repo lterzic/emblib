@@ -1,41 +1,31 @@
 #pragma once
 
-#include "details/mutex_native.hpp"
 #include "chrono.hpp"
-#include "lock.hpp"
+#include <emblib/rtos/backend/mutex.hpp>
+#include <type_traits>
 
 namespace emblib::rtos {
 
 /**
- * Mutex
- * @note Can be used with std guards and locks
+ * Mutex API. Can be used with std locks.
  */
-class mutex : private details::mutex_native_t {
-public:
-    explicit mutex() = default;
-
-    /* Copy operations not allowed */
-    mutex(const mutex&) = delete;
-    mutex& operator=(const mutex&) = delete;
-
-    /* Move operations not allowed */
-    mutex(mutex&&) = delete;
-    mutex& operator=(mutex&&) = delete;
+template <typename mutex_type>
+using is_mutex = std::conjunction<
+    std::is_constructible<mutex_type>,
 
     /**
-     * Try to lock the mutex within the given timeout. If successful
-     * returns true, else false.
+     * Try to lock the mutex.
+     * @returns Whether the mutex was successfully locked within the given timeout.
      */
-    bool lock(ticks timeout = MAX_TICKS) noexcept;
+    std::is_invocable_r<bool, decltype(&mutex_type::lock), mutex_type&, timeout>,
 
     /**
-     * Try to unlock the mutex. It will only be successful if
-     * this thread was the one holding the mutex.
+     * Unlock the mutex. This assumes that the calling thread has previously
+     * successfully locked it.
      */
-    bool unlock() noexcept;
+    std::is_invocable_r<void, decltype(&mutex_type::unlock), mutex_type&>
+>;
 
-};
+static_assert(is_mutex<mutex>::value);
 
 }
-
-#include "details/mutex_impl.hpp"

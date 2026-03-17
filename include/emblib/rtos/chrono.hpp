@@ -1,26 +1,12 @@
 #pragma once
 
-#include "details/chrono_native.hpp"
+#include <chrono>
 
 namespace emblib::rtos {
 
 /**
- * Ticks are the basic unit of RTOS time measurement.
+ * Milliseconds is the default timeout type for RTOS APIs.
  */
-using ticks = details::ticks_native;
-
-/**
- * Steady clock based on the number of ticks since system start.
- */
-struct tick_clock {
-    static ticks get_ticks() noexcept;
-};
-
-/**
- * Maximum number of ticks is used to specify an infinite timeout.
- */
-constexpr inline ticks MAX_TICKS {(size_t)-1};
+using timeout = std::chrono::duration<size_t, std::milli>;
 
 }
-
-#include "details/chrono_impl.hpp"
