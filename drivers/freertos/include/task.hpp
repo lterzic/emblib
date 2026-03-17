@@ -73,7 +73,7 @@ public:
     /**
      * Increment task's notification value (works like a counting semaphore).
      */
-    void notify_give() noexcept
+    void notify() noexcept
     {
         xTaskNotifyGive(m_task_handle);
     }
@@ -82,7 +82,7 @@ public:
      * Increment task's notification value.
      * @todo Add argument for higher priority task woken
      */
-    void notify_give_from_isr() noexcept
+    void notify_from_isr() noexcept
     {
         vTaskNotifyGiveFromISR(m_task_handle, NULL);
     }
@@ -92,7 +92,7 @@ protected:
      * Wait for a notification to this task.
      * @returns `true` if a notification was received before timeout
      */
-    bool notify_take(ticks timeout, bool clear_count = false) noexcept
+    bool wait_on_notify(ticks timeout, bool clear_count = false) noexcept
     {
         return ulTaskNotifyTake(clear_count, timeout.count());
     }
