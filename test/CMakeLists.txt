@@ -26,7 +26,7 @@ target_link_libraries(tests
 PRIVATE
     Catch2::Catch2WithMain
     emblib
-    emblib_math_eigen
+    emblib_eigen
 )
 
 catch_discover_tests(tests)
