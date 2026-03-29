@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lock.hpp"
 #include <atomic>
 
 namespace emblib::rtos {

@@ -1,3 +1,4 @@
+#include "emblib/rtos/lock.hpp"
 #include "emblib/rtos/spinlock.hpp"
 #include "catch2/catch_test_macros.hpp"
 
