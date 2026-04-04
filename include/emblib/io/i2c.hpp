@@ -105,6 +105,14 @@ public:
         return m_bus.abort_async_write();
     }
 
+    result read_reg(uint8_t reg, etl::span<uint8_t> buffer, timeout timeout) noexcept
+    {
+        auto write_res = write({&reg, 1}, timeout);
+        if (!write_res)
+            return write_res;
+        return read(buffer, timeout);
+    }
+
 private:
     i2c_bus& m_bus;
     i2c_address m_address;
