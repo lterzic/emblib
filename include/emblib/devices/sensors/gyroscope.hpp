@@ -9,7 +9,7 @@ namespace emblib::devices {
 /**
  * SI rotation units - radians per second
  */
-using gyroscope_units = units::radians_per_second<float>;
+using gyroscope_units = units::degrees_per_second<int16_t>;
 
 /**
  * Gyroscope sensor type

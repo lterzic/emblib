@@ -9,7 +9,7 @@ namespace emblib::devices {
 /**
  * SI acceleration units - meters per second squared
  */
-using accelerometer_units = units::meters_per_second_squared<float>;
+using accelerometer_units = units::standard_gravity<int16_t>;
 
 /**
  * Accelerometer sensor type
