@@ -90,9 +90,4 @@ private:
     V m_view;
 };
 
-template <typename L, typename R = L>
-struct bin_op_plus {
-    auto operator()(const L& lhs, const R& rhs) const noexcept { return lhs + rhs; }
-};
-
 }

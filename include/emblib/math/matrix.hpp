@@ -1,6 +1,7 @@
 #pragma once
 
 #include "matrix_views.hpp"
+#include "ops.hpp"
 #include <array>
 
 namespace emblib::math {
@@ -24,7 +25,7 @@ public:
     template <typename RV>
     auto operator+(const vmatrix<R, C, RV>& rhs) const noexcept
     {
-        using op = bin_op_plus<view_data_type<V>, view_data_type<RV>>;
+        using op = bin_op_add<view_data_type<V>, view_data_type<RV>>;
         using op_view = ewise_op_view<V, RV, op>;
         return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
     }
@@ -32,9 +33,113 @@ public:
     template <typename T>
     auto operator+(T scalar) const noexcept
     {
-        using op = bin_op_plus<view_data_type<V>, T>;
+        using op = bin_op_add<view_data_type<V>, T>;
         using op_view = scalar_op_view<V, T, op>;
         return vmatrix<R, C, op_view>(op_view(m_view, scalar));
+    }
+
+    template <typename RV>
+    auto operator-(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_sub<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename T>
+    auto operator-(T scalar) const noexcept
+    {
+        using op = bin_op_sub<view_data_type<V>, T>;
+        using op_view = scalar_op_view<V, T, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, scalar));
+    }
+
+    template <typename RV>
+    auto operator*(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_mul<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename T>
+    auto operator*(T scalar) const noexcept
+    {
+        using op = bin_op_mul<view_data_type<V>, T>;
+        using op_view = scalar_op_view<V, T, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, scalar));
+    }
+
+    template <typename RV>
+    auto operator/(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_div<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename T>
+    auto operator/(T scalar) const noexcept
+    {
+        using op = bin_op_div<view_data_type<V>, T>;
+        using op_view = scalar_op_view<V, T, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, scalar));
+    }
+
+    template <typename RV>
+    auto operator==(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_eq<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename RV>
+    auto operator!=(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_neq<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename RV>
+    auto operator<(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_lt<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename RV>
+    auto operator>(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_gt<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename RV>
+    auto operator<=(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_lte<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    template <typename RV>
+    auto operator>=(const vmatrix<R, C, RV>& rhs) const noexcept
+    {
+        using op = bin_op_gte<view_data_type<V>, view_data_type<RV>>;
+        using op_view = ewise_op_view<V, RV, op>;
+        return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
+    }
+
+    bool all() const noexcept
+    {
+        for (size_t i = 0; i < R; i++)
+            for (size_t j = 0; j < C; j++)
+                if (!m_view(i, j)) return false;
+        return true;
     }
 
 private:
@@ -82,6 +187,7 @@ public:
     template <typename V>
     matrix& operator=(const vmatrix<R, C, V>& rhs) noexcept
     {
+        static_assert(std::is_same_v<T, view_data_type<V>>);
         for (size_t i = 0; i < R; i++) {
             for (size_t j = 0; j < C; j++) {
                 m_data[i][j] = rhs(i, j);
