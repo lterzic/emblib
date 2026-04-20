@@ -2,7 +2,6 @@
 
 #include "matrix_views.hpp"
 #include "ops.hpp"
-#include <array>
 
 namespace emblib::math {
 
@@ -17,6 +16,23 @@ class vmatrix {
 public:
     vmatrix(V view) : m_view(view) {}
 
+    template <size_t SR, size_t SC>
+    auto submatrix(size_t top, size_t left) const noexcept
+    {
+        return vmatrix<SR, SC, submatrix_view<V>>(submatrix_view<V>(m_view, top, left));
+    }
+
+    auto transpose() const noexcept
+    {
+        return vmatrix<C, R, transpose_view<V>>(transpose_view<V>(m_view));
+    }
+
+    template <size_t K, typename RV>
+    auto matmul(const vmatrix<C, K, RV>& rhs) const noexcept
+    {
+        return vmatrix<R, K, matmul_view<V, RV, C>>(matmul_view<V, RV, C>(m_view, rhs.m_view));
+    }
+
     auto operator()(size_t i, size_t j) const noexcept
     {
         return m_view(i, j);
@@ -30,7 +46,7 @@ public:
         return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
     }
 
-    template <typename T>
+    template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
     auto operator+(T scalar) const noexcept
     {
         using op = bin_op_add<view_data_type<V>, T>;
@@ -46,7 +62,7 @@ public:
         return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
     }
 
-    template <typename T>
+    template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
     auto operator-(T scalar) const noexcept
     {
         using op = bin_op_sub<view_data_type<V>, T>;
@@ -62,7 +78,7 @@ public:
         return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
     }
 
-    template <typename T>
+    template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
     auto operator*(T scalar) const noexcept
     {
         using op = bin_op_mul<view_data_type<V>, T>;
@@ -78,7 +94,7 @@ public:
         return vmatrix<R, C, op_view>(op_view(m_view, rhs.m_view));
     }
 
-    template <typename T>
+    template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
     auto operator/(T scalar) const noexcept
     {
         using op = bin_op_div<view_data_type<V>, T>;
@@ -176,12 +192,12 @@ public:
 
     matrix(const matrix& other) noexcept : base(basic_view<T, R, C>(m_data))
     {
-        *this = other;
+        this->operator=<basic_view<T, R, C>>(other);
     }
 
     matrix(matrix&& other) noexcept : base(basic_view<T, R, C>(m_data))
     {
-        *this = other;
+        this->operator=<basic_view<T, R, C>>(other);
     }
 
     template <typename V>

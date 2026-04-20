@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ops.hpp"
 #include <cstddef>
 #include <type_traits>
 
@@ -89,5 +90,46 @@ public:
 private:
     V m_view;
 };
+
+template <typename V>
+class submatrix_view {
+public:
+    submatrix_view(V view, size_t top, size_t left) : m_view(view), m_top(top), m_left(left) {}
+
+    auto operator()(size_t i, size_t j) const noexcept
+    {
+        return m_view(m_top + i, m_left + j);
+    }
+
+    auto& operator()(size_t i, size_t j) noexcept
+    {
+        return m_view(m_top + i, m_left + j);
+    }
+
+private:
+    V m_view;
+    size_t m_top, m_left;
+};
+
+template <typename V1, typename V2, size_t N>
+class matmul_view {
+public:
+    matmul_view(V1 lhs, V2 rhs) : m_lhs(lhs), m_rhs(rhs) {}
+
+    auto operator()(size_t i, size_t j) const noexcept
+    {
+        using res_type = decltype(std::declval<view_data_type<V1>>() * std::declval<view_data_type<V2>>());
+
+        res_type acc(0);
+        for (size_t k = 0; k < N; k++) {
+            acc += m_lhs(i, k) * m_rhs(k, j);
+        }
+        return acc;
+    }
+private:
+    V1 m_lhs;
+    V2 m_rhs;
+};
+
 
 }
