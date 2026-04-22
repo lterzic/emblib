@@ -3,7 +3,13 @@
 #include "matrix_views.hpp"
 #include "ops.hpp"
 
+#include <cmath>
+#include <limits>
+
 namespace emblib::math {
+
+template <typename T, size_t R, size_t C>
+class matrix;
 
 /**
  * Definition of the matrix operations on a view of elements.
@@ -15,23 +21,6 @@ class vmatrix {
 
 public:
     vmatrix(V view) : m_view(view) {}
-
-    template <size_t SR, size_t SC>
-    auto submatrix(size_t top, size_t left) const noexcept
-    {
-        return vmatrix<SR, SC, submatrix_view<V>>(submatrix_view<V>(m_view, top, left));
-    }
-
-    auto transpose() const noexcept
-    {
-        return vmatrix<C, R, transpose_view<V>>(transpose_view<V>(m_view));
-    }
-
-    template <size_t K, typename RV>
-    auto matmul(const vmatrix<C, K, RV>& rhs) const noexcept
-    {
-        return vmatrix<R, K, matmul_view<V, RV, C>>(matmul_view<V, RV, C>(m_view, rhs.m_view));
-    }
 
     auto operator()(size_t i, size_t j) const noexcept
     {
@@ -158,6 +147,95 @@ public:
         return true;
     }
 
+    template <size_t SR, size_t SC>
+    auto submatrix(size_t top, size_t left) const noexcept
+    {
+        return vmatrix<SR, SC, submatrix_view<V>>(submatrix_view<V>(m_view, top, left));
+    }
+
+    auto transpose() const noexcept
+    {
+        return vmatrix<C, R, transpose_view<V>>(transpose_view<V>(m_view));
+    }
+
+    template <size_t K, typename RV>
+    auto matmul(const vmatrix<C, K, RV>& rhs) const noexcept
+    {
+        return vmatrix<R, K, matmul_view<V, RV, C>>(matmul_view<V, RV, C>(m_view, rhs.m_view));
+    }
+
+    // Solves A·X = B where *this is A (square N×N) and B is N×K.
+    // Uses LU decomposition with partial pivoting on a stack-allocated augmented matrix.
+    // Returns NaN-filled matrix if A is singular.
+    template <size_t K, typename BV>
+    auto matdivl(const vmatrix<R, K, BV>& B) const noexcept
+        -> matrix<view_data_type<V>, R, K>
+    {
+        static_assert(R == C, "matdivl requires a square matrix");
+        using T = view_data_type<V>;
+        static_assert(std::is_floating_point_v<T>, "matdivl requires floating-point element type");
+
+        constexpr size_t N = R;
+
+        T aug[N][N + K];
+        for (size_t i = 0; i < N; i++) {
+            for (size_t j = 0; j < N; j++)
+                aug[i][j] = (*this)(i, j);
+            for (size_t k = 0; k < K; k++)
+                aug[i][N + k] = B(i, k);
+        }
+
+        for (size_t col = 0; col < N; col++) {
+            size_t pivot_row = col;
+            T max_val = std::abs(aug[col][col]);
+            for (size_t row = col + 1; row < N; row++) {
+                T val = std::abs(aug[row][col]);
+                if (val > max_val) { max_val = val; pivot_row = row; }
+            }
+
+            if (max_val == T(0)) {
+                matrix<T, N, K> nan_result;
+                for (size_t i = 0; i < N; i++)
+                    for (size_t k = 0; k < K; k++)
+                        nan_result(i, k) = std::numeric_limits<T>::quiet_NaN();
+                return nan_result;
+            }
+
+            if (pivot_row != col)
+                for (size_t j = 0; j < N + K; j++)
+                    std::swap(aug[col][j], aug[pivot_row][j]);
+
+            for (size_t row = col + 1; row < N; row++) {
+                T factor = aug[row][col] / aug[col][col];
+                for (size_t j = col; j < N + K; j++)
+                    aug[row][j] -= factor * aug[col][j];
+            }
+        }
+
+        matrix<T, N, K> result;
+        for (size_t k = 0; k < K; k++) {
+            for (size_t i = N; i-- > 0; ) {
+                T sum = aug[i][N + k];
+                for (size_t j = i + 1; j < N; j++)
+                    sum -= aug[i][j] * result(j, k);
+                result(i, k) = sum / aug[i][i];
+            }
+        }
+        return result;
+    }
+
+    // Solves X·A = B where *this is B (R×N) and A is square (N×N).
+    // Implemented as X = (Aᵀ \ Bᵀ)ᵀ using matdivl.
+    template <typename AV>
+    auto matdivr(const vmatrix<C, C, AV>& A) const noexcept
+        -> matrix<view_data_type<V>, R, C>
+    {
+        using T = view_data_type<V>;
+        static_assert(std::is_floating_point_v<T>, "matdivr requires floating-point element type");
+        matrix<T, R, C> result = A.transpose().matdivl(this->transpose()).transpose();
+        return result;
+    }
+
 private:
     V m_view;
 };
@@ -198,6 +276,12 @@ public:
     matrix(matrix&& other) noexcept : base(basic_view<T, R, C>(m_data))
     {
         this->operator=<basic_view<T, R, C>>(other);
+    }
+
+    template <typename V>
+    matrix(const vmatrix<R, C, V>& other) noexcept : base(basic_view<T, R, C>(m_data))
+    {
+        this->operator=<V>(other);
     }
 
     template <typename V>
